@@ -2,10 +2,10 @@
   "uid": "eventhub",
   "title": "EventHub - Application Overview",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "refresh": "5s",
   "time": {
-    "from": "now-30m",
+    "from": "now-45m",
     "to": "now"
   },
   "tags": [
@@ -33,7 +33,8 @@
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
-          }
+          },
+          "instant": true
         }
       ]
     },
@@ -58,7 +59,8 @@
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
-          }
+          },
+          "instant": true
         }
       ]
     },
@@ -83,7 +85,8 @@
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
-          }
+          },
+          "instant": true
         }
       ]
     },
@@ -109,7 +112,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "legendFormat": "{{version}} / {{exported_track}}"
+          "legendFormat": "{{version}} / {{exported_track}}",
+          "instant": true
         }
       ]
     },
@@ -162,7 +166,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "100 * sum by (track) (rate(eventhub_http_requests_total{status=~\"5..\"}[1m])) / sum by (track) (rate(eventhub_http_requests_total{route=~\"/api/.*\"}[1m]))",
+          "expr": "100 * (sum by (track) (rate(eventhub_http_requests_total{status=~\"5..\", route=~\"/api/.*\"}[1m])) or sum by (track) (rate(eventhub_http_requests_total{route=~\"/api/.*\"}[1m])) * 0) / sum by (track) (rate(eventhub_http_requests_total{route=~\"/api/.*\"}[1m]))",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
@@ -226,7 +230,7 @@
       "targets": [
         {
           "refId": "A",
-          "expr": "sum by (level) (count_over_time({namespace=\"eventhub\", app=\"eventhub\"} | json [1m]))",
+          "expr": "sum by (level) (count_over_time({namespace=\"eventhub\", app=\"eventhub\"} | json level=\"level\" [1m]))",
           "datasource": {
             "type": "loki",
             "uid": "loki"
