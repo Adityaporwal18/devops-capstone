@@ -1,0 +1,15 @@
+{"time": "2026-11-27T16:17:03+0000", "level": "INFO", "message": "registration accepted", "version": "0.3.1", "track": "stable", "event_id": 1}
+{"time": "2026-11-27T16:17:03+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "POST", "path": "/api/events/1/registrations", "status": 201, "duration_ms": 30.63}
+{"time": "2026-11-27T16:17:03+0000", "level": "INFO", "message": "registration accepted", "version": "0.3.1", "track": "stable", "event_id": 1}
+{"time": "2026-11-27T16:17:03+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "POST", "path": "/api/events/1/registrations", "status": 201, "duration_ms": 39.03}
+{"time": "2026-11-27T16:17:04+0000", "level": "INFO", "message": "registration accepted", "version": "0.3.1", "track": "stable", "event_id": 1}
+{"time": "2026-11-27T16:17:04+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "POST", "path": "/api/events/1/registrations", "status": 201, "duration_ms": 20.39}
+{"time": "2026-11-27T16:21:07+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/api/version", "status": 200, "duration_ms": 0.81}
+{"time": "2026-11-27T16:21:19+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/", "status": 200, "duration_ms": 117.99}
+{"time": "2026-11-27T16:21:19+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/static/style.css", "status": 200, "duration_ms": 32.25}
+{"time": "2026-11-27T16:21:19+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/static/app.js", "status": 200, "duration_ms": 15.11}
+{"time": "2026-11-27T16:21:20+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/favicon.ico", "status": 404, "duration_ms": 24.85}
+{"time": "2026-11-27T16:21:20+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/api/stats", "status": 200, "duration_ms": 112.7}
+{"time": "2026-11-27T16:22:22+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/api/events", "status": 200, "duration_ms": 16.86}
+{"time": "2026-11-27T16:22:22+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/api/events", "status": 200, "duration_ms": 23.7}
+{"time": "2026-11-27T16:22:23+0000", "level": "INFO", "message": "request", "version": "0.3.1", "track": "stable", "method": "GET", "path": "/api/events", "status": 200, "duration_ms": 63.83}
