@@ -29,7 +29,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: eventhub
-          image: adityaporwal18/eventhub:906fe38
+          image: adityaporwal18/eventhub:139f0d6
           ports:
             - containerPort: 8000
           env:
