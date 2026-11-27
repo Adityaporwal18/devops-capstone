@@ -1,0 +1,32 @@
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8000/health/ready; echo
+{"status":"ready"}
+
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8000/api/version; echo
+{"git_sha":"798ef62","track":"stable","version":"0.1.0"}
+
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8000/api/events | python3 -m json.tool | head -n 10
+[
+    {
+        "capacity": 40,
+        "event_date": "2026-12-10",
+        "id": 1,
+        "registered": 0,
+        "seats_left": 40,
+        "title": "DevOps Workshop",
+        "venue": "Lab 204, Block A"
+    },
+aditya@lima-devops:~/devops-capstone$ curl -s -X POST localhost:8000/api/events/1/registrations -H 'Content-Type: application/json' -d '{"name":"Aditya Porwal","email":"aditya@example.com"}'; echo
+{"created_at":"2026-11-27T15:35:40.769727+00:00","email":"aditya@example.com","id":1,"name":"Aditya Porwal"}
+
+aditya@lima-devops:~/devops-capstone$ curl -s -X POST localhost:8000/api/events/1/registrations -H 'Content-Type: application/json' -d '{"name":"Aditya Porwal","email":"aditya@example.com"}'; echo
+{"error":"this email is already registered for the event"}
+
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8000/metrics | grep -E '^eventhub_(registrations_total|database_up|build_info)'
+eventhub_registrations_total 1.0
+eventhub_database_up 1.0
+eventhub_build_info{git_sha="798ef62",track="stable",version="0.1.0"} 1.0
+aditya@lima-devops:~/devops-capstone$ docker compose logs --no-log-prefix --tail 3 app
+{"time": "2026-11-27T15:35:40+0000", "level": "INFO", "message": "registration accepted", "version": "0.1.0", "track": "stable", "event_id": 1}
+{"time": "2026-11-27T15:35:40+0000", "level": "INFO", "message": "request", "version": "0.1.0", "track": "stable", "method": "POST", "path": "/api/events/1/registrations", "status": 201, "duration_ms": 11.12}
+{"time": "2026-11-27T15:35:42+0000", "level": "INFO", "message": "request", "version": "0.1.0", "track": "stable", "method": "POST", "path": "/api/events/1/registrations", "status": 409, "duration_ms": 17.24}
+aditya@lima-devops:~/devops-capstone$ 

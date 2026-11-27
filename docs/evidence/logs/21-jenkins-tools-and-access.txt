@@ -1,0 +1,14 @@
+aditya@lima-devops:~/devops-capstone$ cd /tmp
+aditya@lima-devops:/tmp$ curl -sLO https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_Linux-ARM64.tar.gz
+aditya@lima-devops:/tmp$ curl -sLO https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_checksums.txt
+aditya@lima-devops:/tmp$ sha256sum -c --ignore-missing trivy_0.76.2_checksums.txt
+trivy_0.76.2_Linux-ARM64.tar.gz: OK
+aditya@lima-devops:/tmp$ sudo tar -xzf trivy_0.76.2_Linux-ARM64.tar.gz -C /usr/local/bin trivy
+aditya@lima-devops:/tmp$ trivy --version | head -n 1
+Version: 0.76.2
+aditya@lima-devops:/tmp$ sudo usermod -aG docker jenkins
+aditya@lima-devops:/tmp$ sudo install -d -o jenkins -g jenkins -m 700 /var/lib/jenkins/.docker /var/lib/jenkins/.ssh
+aditya@lima-devops:/tmp$ sudo install -o jenkins -g jenkins -m 600 ~/.docker/config.json /var/lib/jenkins/.docker/config.json
+aditya@lima-devops:/tmp$ sudo cat /etc/sudoers.d/jenkins-kubectl
+jenkins ALL=(aditya) NOPASSWD: /usr/local/bin/kubectl
+aditya@lima-devops:/tmp$ 

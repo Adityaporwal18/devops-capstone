@@ -1,0 +1,221 @@
+Started by an SCM change
+Obtained Jenkinsfile from git https://github.com/Adityaporwal18/devops-capstone.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/devops-capstone
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+DEPRECATED: Message exclusion during polling is deprecated for Pipeline jobs. Use the Pipeline SCM trait instead.
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/devops-capstone/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Adityaporwal18/devops-capstone.git # timeout=10
+Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision b439ad3413e6d3a6cedf7c1fa4c083628d3c4bf9 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f b439ad3413e6d3a6cedf7c1fa4c083628d3c4bf9 # timeout=10
+Commit message: "Simplify seats_left (deliberate bug to test the pipeline's test gate)"
+ > git rev-list --no-walk 906fe38b4e3d320a1cba6326484338e046364431 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 40 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+DEPRECATED: Message exclusion during polling is deprecated for Pipeline jobs. Use the Pipeline SCM trait instead.
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/devops-capstone/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Adityaporwal18/devops-capstone.git # timeout=10
+Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision b439ad3413e6d3a6cedf7c1fa4c083628d3c4bf9 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f b439ad3413e6d3a6cedf7c1fa4c083628d3c4bf9 # timeout=10
+Commit message: "Simplify seats_left (deliberate bug to test the pipeline's test gate)"
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] sh
++ git log -1 --pretty=%s
++ grep -c skip ci
++ true
+[Pipeline] sh
++ . ./release.env
++ APP_VERSION=0.2.0
++ FAULT_RATE=0
++ echo 0.2.0
+[Pipeline] sh
++ . ./release.env
++ APP_VERSION=0.2.0
++ FAULT_RATE=0
++ echo 0
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ mkdir -p reports
++ echo Release 0.2.0, commit b439ad3
+Release 0.2.0, commit b439ad3
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Release pipeline)
+[Pipeline] stage
+[Pipeline] { (Unit tests)
+[Pipeline] sh
++ docker build -q --target test -t eventhub-test:b439ad3 .
+sha256:94b54e04b04234df7e1feca49af4d77d345080fa512ff68c79aa2c00b54e7e84
+[Pipeline] sh
++ docker run --rm eventhub-test:b439ad3 pytest -v tests/test_rules.py
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-9.2.0, pluggy-1.7.0 -- /usr/local/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /srv
+configfile: pytest.ini
+plugins: platformdirs-4.14.8
+collecting ... collected 28 items
+
+tests/test_rules.py::test_clean_event_accepts_valid_data PASSED          [  3%]
+tests/test_rules.py::test_clean_event_trims_text PASSED                  [  7%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[] PASSED         [ 10%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[ab] PASSED       [ 14%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[title2] PASSED   [ 17%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[None] PASSED     [ 21%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[42] PASSED       [ 25%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[0] PASSED     [ 28%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[-5] PASSED    [ 32%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[5001] PASSED  [ 35%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[40] PASSED    [ 39%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[12.5] PASSED  [ 42%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[True] PASSED  [ 46%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[None] PASSED  [ 50%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[] PASSED          [ 53%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[10-12-2026] PASSED [ 57%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[2026-13-01] PASSED [ 60%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[tomorrow] PASSED  [ 64%]
+tests/test_rules.py::test_clean_event_requires_an_object PASSED          [ 67%]
+tests/test_rules.py::test_clean_registration_lowercases_email PASSED     [ 71%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[] PASSED  [ 75%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[no-at-sign] PASSED [ 78%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[a@b] PASSED [ 82%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[two words@example.com] PASSED [ 85%]
+tests/test_rules.py::test_clean_registration_requires_name PASSED        [ 89%]
+tests/test_rules.py::test_seats_left_counts_down PASSED                  [ 92%]
+tests/test_rules.py::test_seats_left_never_negative FAILED               [ 96%]
+tests/test_rules.py::test_is_full PASSED                                 [100%]
+
+=================================== FAILURES ===================================
+________________________ test_seats_left_never_negative ________________________
+
+    def test_seats_left_never_negative():
+>       assert seats_left(10, 12) == 0
+E       assert -2 == 0
+E        +  where -2 = seats_left(10, 12)
+
+tests/test_rules.py:65: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_rules.py::test_seats_left_never_negative - assert -2 == 0
+========================= 1 failed, 27 passed in 0.46s =========================
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Integration tests)
+Stage "Integration tests" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Static analysis)
+Stage "Static analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Dependency audit)
+Stage "Dependency audit" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build image)
+Stage "Build image" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Image scan)
+Stage "Image scan" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push image)
+Stage "Push image" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy canary)
+Stage "Deploy canary" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Canary analysis)
+Stage "Canary analysis" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Promote)
+Stage "Promote" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] sh
++ docker rmi -f eventhub-test:b439ad3
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+The pipeline stopped before deployment: the running version is unchanged.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

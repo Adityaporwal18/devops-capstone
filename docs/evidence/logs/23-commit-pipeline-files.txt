@@ -1,0 +1,19 @@
+aditya@lima-devops:~/devops-capstone$ git status --short
+ M Dockerfile
+?? Jenkinsfile
+?? jenkins/
+?? release.env
+?? scripts/canary-check.sh
+?? scripts/gitops.sh
+?? scripts/wait-rollout.sh
+aditya@lima-devops:~/devops-capstone$ git add -A
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add Jenkins pipeline: tests, security scans, image build, GitOps canary deployment, analysis and promotion"
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 3
+ca391aa (HEAD -> main, origin/main) Add Jenkins pipeline: tests, security scans, image build, GitOps canary deployment, analysis and promotion
+b1de1a4 Add Prometheus, Grafana, Loki and Promtail platform stack managed by Argo CD
+75ca90b Add infrastructure automation (Ansible, Terraform), Kubernetes manifests and Argo CD application
+aditya@lima-devops:~/devops-capstone$ cat release.env
+APP_VERSION=0.1.0
+FAULT_RATE=0
+aditya@lima-devops:~/devops-capstone$ 

@@ -1,0 +1,25 @@
+aditya@lima-devops:~/devops-capstone$ docker tag eventhub:0.1.0 adityaporwal18/eventhub:0.1.0
+aditya@lima-devops:~/devops-capstone$ docker push adityaporwal18/eventhub:0.1.0
+The push refers to repository [docker.io/adityaporwal18/eventhub]
+b37b16754da2: Mounted from adityaporwal18/devops-lab2 
+44136fa355b3: Mounted from adityaporwal18/devops-lab2 
+db9932305652: Pushed 
+48fb00926fe4: Mounted from adityaporwal18/devops-lab2 
+226fb6b313b1: Mounted from adityaporwal18/devops-lab2 
+cb82b968e30a: Mounted from adityaporwal18/devops-lab2 
+4f4fb700ef54: Mounted from library/redis 
+1cd88cbc4cbb: Pushed 
+0af2cca55d91: Pushed 
+32737054d5fb: Pushed 
+18434307552a: Pushed 
+92a9dcc7395d: Pushed 
+0.1.0: digest: sha256:513a58edc09d0e7d6ae188ba457a215e935e30ab8711a77b70e34e60d50b76b5 size: 856
+aditya@lima-devops:~/devops-capstone$ docker compose down
+[+] down 3/3
+ ✔ Container eventhub-app-1 Removed                                                                                        0.6s
+ ✔ Container eventhub-db-1  Removed                                                                                        0.3s
+ ✔ Network eventhub_default Removed                                                                                        0.1s
+aditya@lima-devops:~/devops-capstone$ docker volume ls --filter name=eventhub
+DRIVER    VOLUME NAME
+local     eventhub_db-data
+aditya@lima-devops:~/devops-capstone$ 

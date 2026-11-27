@@ -1,0 +1,17 @@
+aditya@lima-devops:~/devops-capstone$ git diff release.env | tail -n 5
+@@ -1,2 +1,2 @@
+-APP_VERSION=0.3.0
+-FAULT_RATE=0.5
++APP_VERSION=0.3.1
++FAULT_RATE=0
+aditya@lima-devops:~/devops-capstone$ git add release.env
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Release 0.3.1: turn the fault switch off"
+aditya@lima-devops:~/devops-capstone$ git add deploy/platform
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Fix two Grafana dashboard queries (Loki series limit, current versions only)"
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 2
+139f0d6 (HEAD -> main, origin/main) Fix two Grafana dashboard queries (Loki series limit, current versions only)
+006d2bf Release 0.3.1: turn the fault switch off
+aditya@lima-devops:~/devops-capstone$ date
+Fri Nov 27 21:40:46 IST 2026
+aditya@lima-devops:~/devops-capstone$ 

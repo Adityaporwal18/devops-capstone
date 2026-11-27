@@ -1,0 +1,33 @@
+aditya@lima-devops:~/devops-capstone$ git status -sb
+## main...origin/main [ahead 1]
+ M jenkins/job-config.xml
+?? docs/samples/
+aditya@lima-devops:~/devops-capstone$ git add -A
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Keep the polling trigger in the Jenkins job definition; add an application log sample"
+aditya@lima-devops:~/devops-capstone$ git pull --rebase
+remote: Enumerating objects: 16, done.
+remote: Counting objects: 100% (16/16), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 11 (delta 6), reused 10 (delta 5), pack-reused 0 (from 0)
+Unpacking objects: 100% (11/11), 1014 bytes | 42.00 KiB/s, done.
+From https://github.com/Adityaporwal18/devops-capstone
+   139f0d6..a617ff3  main       -> origin/main
+Successfully rebased and updated refs/heads/main.
+aditya@lima-devops:~/devops-capstone$ git push
+Enumerating objects: 25, done.
+Counting objects: 100% (25/25), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (16/16), done.
+Writing objects: 100% (20/20), 3.77 KiB | 643.00 KiB/s, done.
+Total 20 (delta 5), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (5/5), completed with 3 local objects.
+To https://github.com/Adityaporwal18/devops-capstone.git
+   a617ff3..686d534  main -> main
+aditya@lima-devops:~/devops-capstone$ git log --format='%h  written %ad  %s' --date=format:%H:%M:%S -n 4
+686d534  written 21:56:20  Keep the polling trigger in the Jenkins job definition; add an application log sample
+78326a0  written 21:45:32  Define recovery targets; add backup, restore and fingerprint scripts; limit pipeline triggers to application changes
+a617ff3  written 21:43:38  deploy: promote 139f0d6 to stable [skip ci]
+03e1220  written 21:43:07  deploy: canary 139f0d6 on 1 of 5 pods [skip ci]
+aditya@lima-devops:~/devops-capstone$ git status -sb
+## main...origin/main
+aditya@lima-devops:~/devops-capstone$ 

@@ -1,0 +1,41 @@
+Run started:2026-11-27 15:53:17.988379+00:00
+
+Test results:
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b108_hardcoded_tmp_directory.html
+   Location: ./gunicorn.conf.py:5:17
+4	worker_class = "gthread"
+5	worker_tmp_dir = "/dev/shm"
+6	accesslog = None
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: app/telemetry.py:51:63
+50	        g.started = time.perf_counter()
+51	        if fault_rate and request.path.startswith("/api/") and random.random() < fault_rate:
+52	            return jsonify(error="injected fault (FAULT_RATE test switch)"), 500
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 316
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 1
+		Medium: 1
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 1
+Files skipped (0):

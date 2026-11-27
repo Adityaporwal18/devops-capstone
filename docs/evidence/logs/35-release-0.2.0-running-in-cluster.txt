@@ -1,0 +1,26 @@
+aditya@lima-devops:~/devops-capstone$ kill %1 2>/dev/null; kubectl port-forward -n eventhub service/eventhub 8088:8000 > /tmp/pf-app.log 2>&1 &
+[3] 49548
+aditya@lima-devops:~/devops-capstone$ git pull -q --rebase && git log --oneline -n 3
+[1]   Terminated              kubectl port-forward -n eventhub service/eventhub 8088:8000 > /tmp/pf-app.log 2>&1
+196d4a6 (HEAD -> main, origin/main) deploy: promote 906fe38 to stable [skip ci]
+ec459ec deploy: canary 906fe38 on 1 of 5 pods [skip ci]
+906fe38 Add traffic generator used during rollout observations
+aditya@lima-devops:~/devops-capstone$ kubectl get deployments -n eventhub -o wide
+NAME              READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                            SELECTOR
+eventhub-canary   0/0     0            0           19m   eventhub     adityaporwal18/eventhub:906fe38   app=eventhub,track=canary
+eventhub-stable   4/4     4            4           19m   eventhub     adityaporwal18/eventhub:906fe38   app=eventhub,track=stable
+aditya@lima-devops:~/devops-capstone$ kubectl get pods -n eventhub -L track
+NAME                                READY   STATUS      RESTARTS   AGE     TRACK
+eventhub-db-0                       1/1     Running     0          19m     
+eventhub-db-backup-29929920-dvjtq   0/1     Completed   0          2m43s   
+eventhub-stable-f577c598c-8gdqf     1/1     Running     0          58s     stable
+eventhub-stable-f577c598c-8pg7j     1/1     Running     0          53s     stable
+eventhub-stable-f577c598c-fh5bq     1/1     Running     0          53s     stable
+eventhub-stable-f577c598c-gdwds     1/1     Running     0          57s     stable
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8088/api/version; echo
+{"git_sha":"906fe38","track":"stable","version":"0.2.0"}
+
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8088/api/stats; echo
+{"events":3,"registrations":0,"seats":300,"seats_left":300}
+
+aditya@lima-devops:~/devops-capstone$ 

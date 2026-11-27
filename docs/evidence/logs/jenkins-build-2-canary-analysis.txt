@@ -1,0 +1,7 @@
+Canary analysis: 300 requests to http://192.168.58.2:30080/api/events
+track     requests   failed  error-rate    avg-ms
+stable         240        0        0.0%      14.9
+canary          60        0        0.0%      17.9
+Policy: roll back if the canary's error rate is above 2%, its average response time is
+        above 500 ms, or it received fewer than 20 requests.
+DECISION: PROMOTE - the canary is within the policy

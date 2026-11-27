@@ -1,0 +1,22 @@
+aditya@lima-devops:~/devops-capstone$ terraform -chdir=infrastructure/terraform plan -out=tfplan | grep -E "will be|Plan:"
+  # kubernetes_secret.grafana will be created
+  # random_password.grafana will be created
+Plan: 2 to add, 0 to change, 0 to destroy.
+aditya@lima-devops:~/devops-capstone$ terraform -chdir=infrastructure/terraform apply -auto-approve tfplan | grep -E "Apply complete"
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+aditya@lima-devops:~/devops-capstone$ git add -A
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add Prometheus, Grafana, Loki and Promtail platform stack managed by Argo CD"
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ kubectl apply -f infrastructure/argocd/platform.yaml
+application.argoproj.io/eventhub-platform created
+aditya@lima-devops:~/devops-capstone$ until [ "$(kubectl get application eventhub-platform -n argocd -o jsonpath='{.status.health.status}')" = "Healthy" ]; do sleep 5; done; kubectl get applications -n argocd
+NAME                SYNC STATUS   HEALTH STATUS
+eventhub            Synced        Healthy
+eventhub-platform   Synced        Healthy
+aditya@lima-devops:~/devops-capstone$ kubectl get pods -n monitoring
+NAME                          READY   STATUS    RESTARTS   AGE
+grafana-8cf9d6f5-w969b        1/1     Running   0          71s
+loki-5445df7fd7-khpnr         1/1     Running   0          71s
+prometheus-79f699f876-74sqv   1/1     Running   0          71s
+promtail-bzdbx                1/1     Running   0          71s
+aditya@lima-devops:~/devops-capstone$ 

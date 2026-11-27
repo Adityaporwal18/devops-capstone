@@ -1,0 +1,13 @@
+aditya@lima-devops:~/devops-capstone$ kubectl port-forward -n eventhub service/eventhub 8088:8000 > /tmp/pf-app.log 2>&1 &
+[1] 26265
+aditya@lima-devops:~/devops-capstone$ kubectl port-forward -n argocd service/argocd-server 8443:443 > /tmp/pf-argocd.log 2>&1 &[2] 26308
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8088/api/version; echo
+{"git_sha":"798ef62","track":"stable","version":"0.1.0"}
+
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:8088/health/ready; echo
+{"status":"ready"}
+
+aditya@lima-devops:~/devops-capstone$ NODE=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}'); for i in 1 2 3 4 5 6; do curl -s -o /dev/null -D - http://$NODE:30080/api/events | grep -i x-eventhub; done | sort | uniq -c
+      6 X-EventHub-Track: stable
+      6 X-EventHub-Version: 0.1.0
+aditya@lima-devops:~/devops-capstone$ 

@@ -1,0 +1,10 @@
+aditya@lima-devops:~/devops-capstone$ git diff -U0 app/rules.py | tail -n 3
+@@ -53 +53 @@ def seats_left(capacity, registered):
+-    return max(capacity - registered, 0)
++    return capacity - registered
+aditya@lima-devops:~/devops-capstone$ git commit -q -am "Simplify seats_left (deliberate bug to test the pipeline's test gate)"aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 1
+b439ad3 (HEAD -> main, origin/main) Simplify seats_left (deliberate bug to test the pipeline's test gate)
+aditya@lima-devops:~/devops-capstone$ date
+Fri Nov 27 21:33:14 IST 2026
+aditya@lima-devops:~/devops-capstone$ 

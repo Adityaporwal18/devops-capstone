@@ -1,0 +1,350 @@
+EVENTHUB CAPSTONE - COMMANDS EXECUTED
+=====================================
+
+Environment: Ubuntu 24.04.5 LTS virtual machine (Lima 2.3.0, Apple M1 MacBook Pro), user aditya, host lima-devops.
+Date: 27 November 2026.
+
+Every command listed under a terminal evidence item was extracted from that item's terminal
+log (docs/evidence/logs/), so the commands appear exactly as they were run.
+Items are grouped by the sections of the report; the number at the start of each log/screenshot
+file name gives the real chronological order. The text before '$' is the working directory.
+Steps done in a browser, in an editor or through the Jenkins REST API are described in words.
+Evidence IDs (E01...) match docs/EVIDENCE.md.
+
+
+3. APPLICATION AND VERSION CONTROL
+----------------------------------
+
+[E01] Repository initialised with three commits
+  ~$ cd ~/devops-capstone
+  ~/devops-capstone$ git init
+  ~/devops-capstone$ git add app wsgi.py gunicorn.conf.py requirements.txt .gitignore
+  ~/devops-capstone$ git commit -q -m "Add EventHub application: event and registration API, validation rules, dashboard"
+  ~/devops-capstone$ git add tests pytest.ini requirements-dev.txt compose.test.yml scripts/test.sh Dockerfile .dockerignore
+  ~/devops-capstone$ git commit -q -m "Add unit and integration tests with a containerised test runner"
+  ~/devops-capstone$ git add docker-compose.yml .env.example
+  ~/devops-capstone$ git commit -q -m "Add Docker Compose stack for the application and PostgreSQL"
+  ~/devops-capstone$ git log --oneline
+  ~/devops-capstone$ git ls-files
+
+[E01] Repository initialised with three commits
+  Editor: wrote the EventHub application, tests, Dockerfile and Compose files in ~/devops-capstone
+
+[E02] Unit and integration tests
+  ~/devops-capstone$ scripts/test.sh
+
+[E03] GitHub repository created and pushed
+  ~/devops-capstone$ gh repo create devops-capstone --public --source=. --remote=origin --push --description "EventHub: end-to-end DevOps automation platform (capstone, ENSP461)"
+  ~/devops-capstone$ git remote -v
+  ~/devops-capstone$ git log --oneline
+
+[E04] Commit history on GitHub
+  Browser: opened https://github.com/Adityaporwal18/devops-capstone/commits/main
+
+4. CONTAINERIZATION
+-------------------
+
+[E05] Image build and Compose stack
+  ~/devops-capstone$ cat Dockerfile
+  ~/devops-capstone$ [ -f .env ] || printf 'POSTGRES_PASSWORD=%s\nAPP_VERSION=0.1.0\n' "$(openssl rand -hex 16)" > .env
+  ~/devops-capstone$ GIT_SHA=$(git rev-parse --short HEAD) docker compose up -d --build --quiet-pull
+  ~/devops-capstone$ docker compose ps --format 'table {{.Service}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+  ~/devops-capstone$ docker images eventhub
+
+[E06] API, health check, metrics and JSON logs
+  ~/devops-capstone$ curl -s localhost:8000/health/ready; echo
+  ~/devops-capstone$ curl -s localhost:8000/api/version; echo
+  ~/devops-capstone$ curl -s localhost:8000/api/events | python3 -m json.tool | head -n 10
+  ~/devops-capstone$ curl -s -X POST localhost:8000/api/events/1/registrations -H 'Content-Type: application/json' -d '{"name":"Aditya Porwal","email":"aditya@example.com"}'; echo
+  ~/devops-capstone$ curl -s -X POST localhost:8000/api/events/1/registrations -H 'Content-Type: application/json' -d '{"name":"Aditya Porwal","email":"aditya@example.com"}'; echo
+  ~/devops-capstone$ curl -s localhost:8000/metrics | grep -E '^eventhub_(registrations_total|database_up|build_info)'
+  ~/devops-capstone$ docker compose logs --no-log-prefix --tail 3 app
+
+[E07] EventHub dashboard (Compose)
+  Browser: opened http://localhost:8000/
+
+[E08] Container hardening
+  ~/devops-capstone$ docker compose exec app id
+  ~/devops-capstone$ docker compose exec app sh -c 'touch /srv/test-file'
+  ~/devops-capstone$ docker inspect eventhub-app-1 --format 'read-only root: {{.HostConfig.ReadonlyRootfs}} | dropped capabilities: {{.HostConfig.CapDrop}} | security options: {{.HostConfig.SecurityOpt}}'
+  ~/devops-capstone$ git status --short
+
+[E09] First image pushed to Docker Hub
+  ~/devops-capstone$ docker tag eventhub:0.1.0 adityaporwal18/eventhub:0.1.0
+  ~/devops-capstone$ docker push adityaporwal18/eventhub:0.1.0
+  ~/devops-capstone$ docker compose down
+  ~/devops-capstone$ docker volume ls --filter name=eventhub
+
+[E10] Repository on Docker Hub
+  Browser: opened https://hub.docker.com/r/adityaporwal18/eventhub/tags
+
+[E11] Image tags published by the pipeline
+  Browser: opened https://hub.docker.com/r/adityaporwal18/eventhub/tags
+
+5. INFRASTRUCTURE AUTOMATION
+----------------------------
+
+[E12] Ansible bootstrap, first run
+  ~/devops-capstone$ cat infrastructure/ansible/inventory.ini
+  ~/devops-capstone$ ansible-playbook -i infrastructure/ansible/inventory.ini infrastructure/ansible/bootstrap.yml
+
+[E13] Cluster and Argo CD ready
+  ~/devops-capstone$ kubectl config current-context
+  ~/devops-capstone$ kubectl get nodes -o wide
+  ~/devops-capstone$ kubectl get pods -n argocd
+
+[E14] Ansible second run; Terraform init
+  ~/devops-capstone$ ansible-playbook -i infrastructure/ansible/inventory.ini infrastructure/ansible/bootstrap.yml | tail -n 4
+  ~/devops-capstone$ cd infrastructure/terraform
+  ~/devops-capstone/infrastructure/terraform$ terraform init | tail -n 12
+  ~/devops-capstone/infrastructure/terraform$ terraform fmt -check && terraform validate
+
+[E15] Terraform plan and apply
+  ~/devops-capstone/infrastructure/terraform$ terraform plan -out=tfplan | grep -E "will be created|Plan:|sensitive"
+  ~/devops-capstone/infrastructure/terraform$ terraform apply -auto-approve tfplan | tail -n 14
+
+[E16] Terraform resources in the cluster
+  ~/devops-capstone/infrastructure/terraform$ terraform state list
+  ~/devops-capstone/infrastructure/terraform$ kubectl get namespaces eventhub monitoring
+  ~/devops-capstone/infrastructure/terraform$ kubectl describe resourcequota eventhub-quota -n eventhub | tail -n 7
+  ~/devops-capstone/infrastructure/terraform$ kubectl describe secret eventhub-db -n eventhub | tail -n 5
+  ~/devops-capstone/infrastructure/terraform$ terraform plan | tail -n 3
+  ~/devops-capstone/infrastructure/terraform$ cd ~/devops-capstone
+
+6. KUBERNETES ORCHESTRATION AND GITOPS
+--------------------------------------
+
+[E17] Argo CD application created
+  ~/devops-capstone$ git add infrastructure deploy
+  ~/devops-capstone$ git commit -q -m "Add infrastructure automation (Ansible, Terraform), Kubernetes manifests and Argo CD application"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 2
+  ~/devops-capstone$ cat infrastructure/argocd/application.yaml
+  ~/devops-capstone$ kubectl apply -f infrastructure/argocd/application.yaml
+  ~/devops-capstone$ until [ "$(kubectl get application eventhub -n argocd -o jsonpath='{.status.health.status}')" = "Healthy" ]; do sleep 5; done; kubectl get application eventhub -n argocd
+
+[E18] Application running in Kubernetes
+  ~/devops-capstone$ kubectl get deployments,statefulsets,cronjobs,services,pvc -n eventhub
+  ~/devops-capstone$ kubectl get pods -n eventhub -o wide
+
+[E19] Application reachable through the Service
+  ~/devops-capstone$ kubectl port-forward -n eventhub service/eventhub 8088:8000 > /tmp/pf-app.log 2>&1 &
+  ~/devops-capstone$ kubectl port-forward -n argocd service/argocd-server 8443:443 > /tmp/pf-argocd.log 2>&1 &[2] 26308
+  ~/devops-capstone$ curl -s localhost:8088/api/version; echo
+  ~/devops-capstone$ curl -s localhost:8088/health/ready; echo
+  ~/devops-capstone$ NODE=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}'); for i in 1 2 3 4 5 6; do curl -s -o /dev/null -D - http://$NODE:30080/api/events | grep -i x-eventhub; done | sort | uniq -c
+
+[E20] EventHub dashboard (Kubernetes)
+  Browser: opened http://localhost:8088/ (port-forward to the Service)
+
+[E21] Argo CD resource tree
+  Browser: opened https://localhost:8443 and signed in as admin (initial password read from the cluster; not recorded)
+
+[E22] Monitoring and logging stack deployed by Argo CD
+  ~/devops-capstone$ terraform -chdir=infrastructure/terraform plan -out=tfplan | grep -E "will be|Plan:"
+  ~/devops-capstone$ terraform -chdir=infrastructure/terraform apply -auto-approve tfplan | grep -E "Apply complete"
+  ~/devops-capstone$ git add -A
+  ~/devops-capstone$ git commit -q -m "Add Prometheus, Grafana, Loki and Promtail platform stack managed by Argo CD"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ kubectl apply -f infrastructure/argocd/platform.yaml
+  ~/devops-capstone$ until [ "$(kubectl get application eventhub-platform -n argocd -o jsonpath='{.status.health.status}')" = "Healthy" ]; do sleep 5; done; kubectl get applications -n argocd
+  ~/devops-capstone$ kubectl get pods -n monitoring
+
+[E23] Cluster state after build #5
+  ~/devops-capstone$ pkill -f 'port-forward -n eventhub' ; sleep 1; kubectl port-forward -n eventhub service/eventhub 8088:8000 > /tmp/pf-app.log 2>&1 &
+  ~/devops-capstone$ kubectl get deployments -n eventhub -o wide
+  ~/devops-capstone$ curl -s localhost:8088/api/version; echo
+  ~/devops-capstone$ kubectl get applications -n argocd
+  ~/devops-capstone$ kubectl get application eventhub -n argocd -o jsonpath='{range .status.history[*]}{.id}{"  "}{.revision}{"  "}{.deployedAt}{"\n"}{end}' | tail -n 8
+  ~/devops-capstone$ kubectl get pods -A --no-headers | awk '{print $1}' | sort | uniq -c
+
+[E24] Argo CD after the releases
+  Browser: opened https://localhost:8443/applications/argocd/eventhub
+
+7. CI/CD PIPELINE
+-----------------
+
+[E25] Tools and access for Jenkins
+  ~/devops-capstone$ cd /tmp
+  /tmp$ curl -sLO https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_Linux-ARM64.tar.gz
+  /tmp$ curl -sLO https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_checksums.txt
+  /tmp$ sha256sum -c --ignore-missing trivy_0.76.2_checksums.txt
+  /tmp$ sudo tar -xzf trivy_0.76.2_Linux-ARM64.tar.gz -C /usr/local/bin trivy
+  /tmp$ trivy --version | head -n 1
+  /tmp$ sudo usermod -aG docker jenkins
+  /tmp$ sudo install -d -o jenkins -g jenkins -m 700 /var/lib/jenkins/.docker /var/lib/jenkins/.ssh
+  /tmp$ sudo install -o jenkins -g jenkins -m 600 ~/.docker/config.json /var/lib/jenkins/.docker/config.json
+  /tmp$ sudo cat /etc/sudoers.d/jenkins-kubectl
+
+[E26] Pipeline files committed
+  ~/devops-capstone$ git status --short
+  ~/devops-capstone$ git add -A
+  ~/devops-capstone$ git commit -q -m "Add Jenkins pipeline: tests, security scans, image build, GitOps canary deployment, analysis and promotion"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 3
+  ~/devops-capstone$ cat release.env
+
+[E26] Pipeline files committed
+  Editor: wrote the Jenkinsfile, scripts/gitops.sh, scripts/wait-rollout.sh, scripts/canary-check.sh, release.env and jenkins/job-config.xml
+
+[E27] Jenkins job configuration
+  Jenkins REST API (signed in as the Jenkins user aditya; credentials not recorded):
+    curl -X POST 'http://localhost:8080/createItem?name=devops-capstone' \
+         -H 'Content-Type: application/xml' --data-binary @jenkins/job-config.xml
+    curl -X POST http://localhost:8080/job/devops-capstone/build      # build #1, same as "Build Now"
+
+[E31] Push release 0.2.0
+  ~/devops-capstone$ git status --short
+  ~/devops-capstone$ git add app tests release.env
+  ~/devops-capstone$ git commit -q -m "Release 0.2.0: add statistics endpoint and summary bar to the dashboard"
+  ~/devops-capstone$ git add Dockerfile
+  ~/devops-capstone$ git commit -q -m "Apply OS security updates in the image (fixes the HIGH finding reported by Trivy)"
+  ~/devops-capstone$ git add scripts/generate-traffic.sh
+  ~/devops-capstone$ git commit -q -m "Add traffic generator used during rollout observations"
+  ~/devops-capstone$ git pull -q --rebase
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 6
+  ~/devops-capstone$ date
+
+[E31] Push release 0.2.0
+  Editor: added /api/stats and the summary bar, two tests, the apt upgrade line in the Dockerfile; set APP_VERSION=0.2.0
+
+[E34] Operations commits rebased and pushed
+  ~/devops-capstone$ git status -sb
+  ~/devops-capstone$ git add -A
+  ~/devops-capstone$ git commit -q -m "Keep the polling trigger in the Jenkins job definition; add an application log sample"
+  ~/devops-capstone$ git pull --rebase
+  ~/devops-capstone$ git push
+  ~/devops-capstone$ git log --format='%h  written %ad  %s' --date=format:%H:%M:%S -n 4
+  ~/devops-capstone$ git status -sb
+
+8. AUTOMATED TESTING AS A PIPELINE GATE
+---------------------------------------
+
+[E37] Commit with a bug
+  ~/devops-capstone$ git diff -U0 app/rules.py | tail -n 3
+  ~/devops-capstone$ git commit -q -am "Simplify seats_left (deliberate bug to test the pipeline's test gate)"aditya@lima-devops:~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 1
+  ~/devops-capstone$ date
+
+[E37] Commit with a bug
+  Editor: removed the max(..., 0) guard from seats_left in app/rules.py
+
+9. CANARY DEPLOYMENT AND AUTOMATIC ROLLBACK
+-------------------------------------------
+
+[E43] Release 0.2.0 running
+  ~/devops-capstone$ kill %1 2>/dev/null; kubectl port-forward -n eventhub service/eventhub 8088:8000 > /tmp/pf-app.log 2>&1 &
+  ~/devops-capstone$ git pull -q --rebase && git log --oneline -n 3
+  ~/devops-capstone$ kubectl get deployments -n eventhub -o wide
+  ~/devops-capstone$ kubectl get pods -n eventhub -L track
+  ~/devops-capstone$ curl -s localhost:8088/api/version; echo
+  ~/devops-capstone$ curl -s localhost:8088/api/stats; echo
+
+[E44] Dashboard of version 0.2.0
+  Browser: opened http://localhost:8088/
+
+[E45] Push a faulty release
+  ~/devops-capstone$ git add app/rules.py
+  ~/devops-capstone$ git commit -q -m "Fix seats_left: never report a negative number of seats"
+  ~/devops-capstone$ git diff release.env | tail -n 5
+  ~/devops-capstone$ git commit -q -am "Release 0.3.0 with the fault switch on (deliberately faulty release to test the canary rollback)"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 2
+  ~/devops-capstone$ date
+
+[E45] Push a faulty release
+  Editor: restored the guard in seats_left; set APP_VERSION=0.3.0 and FAULT_RATE=0.5 in release.env
+
+[E49] After the rollback
+  ~/devops-capstone$ git pull -q --rebase && git log --format='%h  %cd  %an  %s' --date=format:%H:%M:%S -n 4
+  ~/devops-capstone$ kubectl get deployments -n eventhub -o wide
+  ~/devops-capstone$ NODE=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}'); for i in $(seq 1 100); do curl -s -o /dev/null -D - -w '%{http_code}\n' http://$NODE:30080/api/events | grep -i -E '^(x-eventhub-(track|version)|[0-9]{3})'; done | sort | uniq -c
+
+[E50] Push the fixed release
+  ~/devops-capstone$ git diff release.env | tail -n 5
+  ~/devops-capstone$ git add release.env
+  ~/devops-capstone$ git commit -q -m "Release 0.3.1: turn the fault switch off"
+  ~/devops-capstone$ git add deploy/platform
+  ~/devops-capstone$ git commit -q -m "Fix two Grafana dashboard queries (Loki series limit, current versions only)"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 2
+  ~/devops-capstone$ date
+
+[E50] Push the fixed release
+  Editor: set APP_VERSION=0.3.1 and FAULT_RATE=0; corrected two queries in the Grafana dashboard file
+
+[E52] Dashboard of the promoted release
+  Browser: opened http://localhost:8088/
+
+10. MONITORING AND LOGGING
+--------------------------
+
+[E53] Prometheus targets
+  Browser: opened http://localhost:9090/targets (port-forward)
+
+[E56] Grafana dashboard
+  Browser: opened the dashboard at http://localhost:3000 (port-forward, anonymous viewer)
+
+[E57] Metrics, alert history and logs as numbers
+  ~/devops-capstone$ curl -s localhost:9090/api/v1/query --data-urlencode 'query=sum by (track, status) (increase(eventhub_http_requests_total{route="/api/events"}[40m]))' | python3 -c 'import sys,json; [print(r["metric"], round(float(r["value"][1]))) for r in json.load(sys.stdin)["data"]["result"]]'
+  ~/devops-capstone$ curl -s localhost:9090/api/v1/query --data-urlencode 'query=max_over_time(ALERTS{alertname="EventHubHighErrorRate"}[40m])' | python3 -c 'import sys,json; [print(r["metric"]) for r in json.load(sys.stdin)["data"]["result"]]'
+  ~/devops-capstone$ curl -s -G localhost:3100/loki/api/v1/query --data-urlencode 'query=sum by (track, level) (count_over_time({namespace="eventhub", app="eventhub"} | json level="level" [40m]))' | python3 -c 'import sys,json; [print(r["metric"], r["value"][1]) for r in json.load(sys.stdin)["data"]["result"]]'
+  ~/devops-capstone$ curl -s -G localhost:3100/loki/api/v1/query_range --data-urlencode 'query={namespace="eventhub", track="canary"} | json level="level" | level="ERROR"' --data-urlencode 'limit=2' --data-urlencode "start=$(date -d '-40 min' +%s)000000000" | python3 -c 'import sys,json; [print(v[1]) for s in json.load(sys.stdin)["data"]["result"] for v in s["values"]]'
+
+11. SECURITY
+------------
+
+[E58] GitHub host key and deploy key
+  /tmp$ ssh-keyscan -t ed25519 github.com 2>/dev/null | sudo -u jenkins tee /var/lib/jenkins/.ssh/known_hosts | ssh-keygen -lf -
+  /tmp$ ssh-keygen -q -t ed25519 -N '' -C eventhub-jenkins-gitops -f /tmp/gitops_key
+  /tmp$ gh repo deploy-key add /tmp/gitops_key.pub --repo Adityaporwal18/devops-capstone --allow-write --title "Jenkins GitOps key (EventHub pipeline)"
+  /tmp$ gh repo deploy-key list --repo Adityaporwal18/devops-capstone
+  /tmp$ sudo systemctl restart jenkins
+  /tmp$ cd ~/devops-capstone
+
+[E58] GitHub host key and deploy key
+  Jenkins REST API: stored the private key as credential eventhub-gitops-key; the temporary key file was then deleted with shred (value not recorded)
+
+12. RECOVERABILITY
+------------------
+
+[E61] Recovery targets written before the drill
+  ~/devops-capstone$ git pull -q --rebase
+  ~/devops-capstone$ cat docs/recovery-targets.md
+  ~/devops-capstone$ git add -A
+  ~/devops-capstone$ git commit -q -m "Define recovery targets; add backup, restore and fingerprint scripts; limit pipeline triggers to application changes"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --format='%h  %cd  %s' --date=format:%H:%M:%S -n 1
+  ~/devops-capstone$ kubectl -n argocd annotate application eventhub-platform argocd.argoproj.io/refresh=hard --overwrite
+
+[E62] Application pod failure
+  ~/devops-capstone$ kubectl get pods -n eventhub -l track=stable
+  ~/devops-capstone$ POD=$(kubectl get pods -n eventhub -l track=stable -o name | head -n 1); START=$(date +%s%3N); kubectl delete -n eventhub $POD --wait=false; sleep 1; kubectl -n eventhub rollout status deployment/eventhub-stable --timeout=120s; echo "4 of 4 pods Ready again after $(( $(date +%s%3N) - START )) ms"
+  ~/devops-capstone$ kubectl get pods -n eventhub -l track=stable
+
+[E63] Manual drift repaired by Argo CD
+  ~/devops-capstone$ kubectl scale deployment eventhub-stable -n eventhub --replicas=1; for i in $(seq 1 10); do echo "$(date +%T)  $(kubectl get deployment eventhub-stable -n eventhub --no-headers)"; sleep 3; done
+
+[E64] Backup, then data loss
+  ~/devops-capstone$ NODE=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
+  ~/devops-capstone$ for n in 1 2 3 4 5; do curl -s -o /dev/null -w '%{http_code} ' -X POST http://$NODE:30080/api/events/1/registrations -H 'Content-Type: application/json' -d "{\"name\":\"Student $n\",\"email\":\"student$n@example.com\"}"; done; echo
+  ~/devops-capstone$ scripts/db-fingerprint.sh
+  ~/devops-capstone$ scripts/backup-now.sh
+  ~/devops-capstone$ kubectl -n eventhub exec eventhub-db-0 -- psql -U eventhub -d eventhub -c 'TRUNCATE registrations, events'
+  ~/devops-capstone$ scripts/db-fingerprint.sh
+  ~/devops-capstone$ curl -s http://$NODE:30080/api/stats; echo
+
+[E65] Timed restore and verification
+  ~/devops-capstone$ cat scripts/restore-db.sh
+  ~/devops-capstone$ scripts/restore-db.sh
+  ~/devops-capstone$ scripts/db-fingerprint.sh
+  ~/devops-capstone$ curl -s http://$NODE:30080/api/stats; echo
+
+[E66] Database pod recreated
+  ~/devops-capstone$ START=$(date +%s%3N); kubectl delete pod eventhub-db-0 -n eventhub; kubectl -n eventhub rollout status statefulset/eventhub-db --timeout=180s; echo "database pod Ready again after $(( $(date +%s%3N) - START )) ms"
+  ~/devops-capstone$ scripts/db-fingerprint.sh
+  ~/devops-capstone$ kubectl get pvc -n eventhub
+
+Repository: https://github.com/Adityaporwal18/devops-capstone
+Docker Hub:  https://hub.docker.com/r/adityaporwal18/eventhub

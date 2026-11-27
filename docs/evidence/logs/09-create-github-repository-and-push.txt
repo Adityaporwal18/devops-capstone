@@ -1,0 +1,23 @@
+aditya@lima-devops:~/devops-capstone$ gh repo create devops-capstone --public --source=. --remote=origin --push --description "EventHub: end-to-end DevOps automation platform (capstone, ENSP461)"
+✓ Created repository Adityaporwal18/devops-capstone on GitHub
+  https://github.com/Adityaporwal18/devops-capstone
+✓ Added remote https://github.com/Adityaporwal18/devops-capstone.git
+Enumerating objects: 33, done.
+Counting objects: 100% (33/33), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (28/28), done.
+Writing objects: 100% (33/33), 12.10 KiB | 1.73 MiB/s, done.
+Total 33 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), done.
+To https://github.com/Adityaporwal18/devops-capstone.git
+ * [new branch]      HEAD -> main
+branch 'main' set up to track 'origin/main'.
+✓ Pushed commits to https://github.com/Adityaporwal18/devops-capstone.git
+aditya@lima-devops:~/devops-capstone$ git remote -v
+origin  https://github.com/Adityaporwal18/devops-capstone.git (fetch)
+origin  https://github.com/Adityaporwal18/devops-capstone.git (push)
+aditya@lima-devops:~/devops-capstone$ git log --oneline
+798ef62 (HEAD -> main, origin/main) Add Docker Compose stack for the application and PostgreSQL
+e7ce086 Add unit and integration tests with a containerised test runner
+01a8436 Add EventHub application: event and registration API, validation rules, dashboard
+aditya@lima-devops:~/devops-capstone$ 

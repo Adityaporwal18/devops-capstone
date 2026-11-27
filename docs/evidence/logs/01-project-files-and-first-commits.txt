@@ -1,0 +1,37 @@
+aditya@lima-devops:~$ cd ~/devops-capstone
+aditya@lima-devops:~/devops-capstone$ git init
+Initialized empty Git repository in /home/aditya/devops-capstone/.git/
+aditya@lima-devops:~/devops-capstone$ git add app wsgi.py gunicorn.conf.py requirements.txt .gitignore
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add EventHub application: event and registration API, validation rules, dashboard"
+aditya@lima-devops:~/devops-capstone$ git add tests pytest.ini requirements-dev.txt compose.test.yml scripts/test.sh Dockerfile .dockerignore
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add unit and integration tests with a containerised test runner"
+aditya@lima-devops:~/devops-capstone$ git add docker-compose.yml .env.example
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add Docker Compose stack for the application and PostgreSQL"
+aditya@lima-devops:~/devops-capstone$ git log --oneline
+798ef62 (HEAD -> main) Add Docker Compose stack for the application and PostgreSQL
+e7ce086 Add unit and integration tests with a containerised test runner
+01a8436 Add EventHub application: event and registration API, validation rules, dashboard
+aditya@lima-devops:~/devops-capstone$ git ls-files
+.dockerignore
+.env.example
+.gitignore
+Dockerfile
+app/__init__.py
+app/db.py
+app/rules.py
+app/static/app.js
+app/static/style.css
+app/telemetry.py
+app/templates/index.html
+compose.test.yml
+docker-compose.yml
+gunicorn.conf.py
+pytest.ini
+requirements-dev.txt
+requirements.txt
+scripts/test.sh
+tests/conftest.py
+tests/test_api.py
+tests/test_rules.py
+wsgi.py
+aditya@lima-devops:~/devops-capstone$ 

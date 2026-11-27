@@ -1,0 +1,53 @@
+aditya@lima-devops:~/devops-capstone$ cat infrastructure/ansible/inventory.ini
+[platform]
+localhost ansible_connection=local
+aditya@lima-devops:~/devops-capstone$ ansible-playbook -i infrastructure/ansible/inventory.ini infrastructure/ansible/bootstrap.yml
+
+PLAY [Bring up the EventHub platform cluster] *********************************************************************************
+
+TASK [Check that the required tools are installed] ****************************************************************************
+ok: [localhost] => (item=docker)
+ok: [localhost] => (item=kubectl)
+ok: [localhost] => (item=minikube)
+ok: [localhost] => (item=terraform)
+
+TASK [Read the state of the Minikube profile] *********************************************************************************
+ok: [localhost]
+
+TASK [Start the Minikube cluster] *********************************************************************************************
+changed: [localhost]
+
+TASK [Wait for the node to be Ready] ******************************************************************************************
+ok: [localhost]
+
+TASK [Check whether Argo CD is installed] *************************************************************************************
+ok: [localhost]
+
+TASK [Create the argocd namespace] ********************************************************************************************
+changed: [localhost]
+
+TASK [Install Argo CD] ********************************************************************************************************
+changed: [localhost]
+
+TASK [Read replica counts of the Argo CD components that this platform does not use] ******************************************
+ok: [localhost] => (item=argocd-dex-server)
+ok: [localhost] => (item=argocd-notifications-controller)
+ok: [localhost] => (item=argocd-applicationset-controller)
+
+TASK [Scale the unused Argo CD components to zero] ****************************************************************************
+changed: [localhost] => (item=argocd-dex-server)
+changed: [localhost] => (item=argocd-notifications-controller)
+changed: [localhost] => (item=argocd-applicationset-controller)
+
+TASK [Wait for the Argo CD server and repository server] **********************************************************************
+ok: [localhost] => (item=argocd-server)
+ok: [localhost] => (item=argocd-repo-server)
+ok: [localhost] => (item=argocd-redis)
+
+TASK [Wait for the Argo CD application controller] ****************************************************************************
+ok: [localhost]
+
+PLAY RECAP ********************************************************************************************************************
+localhost                  : ok=11   changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+aditya@lima-devops:~/devops-capstone$ 

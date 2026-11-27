@@ -1,0 +1,12 @@
+aditya@lima-devops:~/devops-capstone$ kubectl config current-context
+capstone
+aditya@lima-devops:~/devops-capstone$ kubectl get nodes -o wide
+NAME       STATUS   ROLES           AGE     VERSION   INTERNAL-IP    EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION              CONTAINER-RUNTIME
+capstone   Ready    control-plane   2m12s   v1.37.0   192.168.58.2   <none>        Debian GNU/Linux 12 (bookworm)   6.8.0-147-generic (arm64)   containerd://2.3.4
+aditya@lima-devops:~/devops-capstone$ kubectl get pods -n argocd
+NAME                                 READY   STATUS    RESTARTS   AGE
+argocd-application-controller-0      1/1     Running   0          101s
+argocd-redis-86d4d669f7-sgj95        1/1     Running   0          101s
+argocd-repo-server-966c64566-7wr5q   1/1     Running   0          101s
+argocd-server-677c666df4-ss2q8       1/1     Running   0          101s
+aditya@lima-devops:~/devops-capstone$ 

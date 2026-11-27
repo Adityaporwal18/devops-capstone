@@ -1,0 +1,14 @@
+aditya@lima-devops:~/devops-capstone$ git pull -q --rebase && git log --format='%h  %cd  %an  %s' --date=format:%H:%M:%S -n 4
+c29822d  21:37:24  EventHub Jenkins  deploy: roll back canary df2f16d [skip ci]
+1ad8efb  21:36:57  EventHub Jenkins  deploy: canary df2f16d on 1 of 5 pods [skip ci]
+df2f16d  21:35:16  Adityaporwal18  Release 0.3.0 with the fault switch on (deliberately faulty release to test the canary rollback)
+d9ab3e1  21:35:14  Adityaporwal18  Fix seats_left: never report a negative number of seats
+aditya@lima-devops:~/devops-capstone$ kubectl get deployments -n eventhub -o wide
+NAME              READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                            SELECTOR
+eventhub-canary   0/0     0            0           25m   eventhub     adityaporwal18/eventhub:df2f16d   app=eventhub,track=canary
+eventhub-stable   4/4     4            4           25m   eventhub     adityaporwal18/eventhub:906fe38   app=eventhub,track=stable
+aditya@lima-devops:~/devops-capstone$ NODE=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}'); for i in $(seq 1 100); do curl -s -o /dev/null -D - -w '%{http_code}\n' http://$NODE:30080/api/events | grep -i -E '^(x-eventhub-(track|version)|[0-9]{3})'; done | sort | uniq -c
+    100 200
+    100 X-EventHub-Track: stable
+    100 X-EventHub-Version: 0.2.0
+aditya@lima-devops:~/devops-capstone$ 

@@ -1,0 +1,27 @@
+aditya@lima-devops:~/devops-capstone$ git status --short
+ M Dockerfile
+ M app/__init__.py
+ M app/db.py
+ M app/static/app.js
+ M app/templates/index.html
+ M release.env
+ M tests/test_api.py
+?? scripts/generate-traffic.sh
+aditya@lima-devops:~/devops-capstone$ git add app tests release.env
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Release 0.2.0: add statistics endpoint and summary bar to the dashboard"
+aditya@lima-devops:~/devops-capstone$ git add Dockerfile
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Apply OS security updates in the image (fixes the HIGH finding reported by Trivy)"
+aditya@lima-devops:~/devops-capstone$ git add scripts/generate-traffic.sh
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add traffic generator used during rollout observations"
+aditya@lima-devops:~/devops-capstone$ git pull -q --rebase
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 6
+906fe38 (HEAD -> main, origin/main) Add traffic generator used during rollout observations
+f0f5205 Apply OS security updates in the image (fixes the HIGH finding reported by Trivy)
+bcaa772 Release 0.2.0: add statistics endpoint and summary bar to the dashboard
+7770c06 deploy: promote ca391aa to stable [skip ci]
+c4f6700 deploy: canary ca391aa on 1 of 5 pods [skip ci]
+ca391aa Add Jenkins pipeline: tests, security scans, image build, GitOps canary deployment, analysis and promotion
+aditya@lima-devops:~/devops-capstone$ date
+Fri Nov 27 21:29:49 IST 2026
+aditya@lima-devops:~/devops-capstone$ 

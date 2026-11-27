@@ -1,0 +1,12 @@
+aditya@lima-devops:~/devops-capstone$ kubectl scale deployment eventhub-stable -n eventhub --replicas=1; for i in $(seq 1 10); do echo "$(date +%T)  $(kubectl get deployment eventhub-stable -n eventhub --no-headers)"; sleep 3; done
+deployment.apps/eventhub-stable scaled
+21:46:26  eventhub-stable   4/1   4     4     33m
+21:46:30  eventhub-stable   1/1   1     1     33m
+21:46:33  eventhub-stable   1/4   4     1     33m
+kubectl get application eventhub -n argocd
+21:46:37  eventhub-stable   1/4   4     1     33m
+21:46:40  eventhub-stable   1/4   4     1     33m
+21:46:44  eventhub-stable   3/4   4     3     33m
+21:46:47  eventhub-stable   4/4   4     4     33m
+21:46:51  eventhub-stable   4/4   4     4     33m
+21:46:55  eventhub-stable   4/4   4     4     33m

@@ -1,0 +1,23 @@
+aditya@lima-devops:~/devops-capstone$ ansible-playbook -i infrastructure/ansible/inventory.ini infrastructure/ansible/bootstrap.yml | tail -n 4
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=7    changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+
+aditya@lima-devops:~/devops-capstone$ cd infrastructure/terraform
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ terraform init | tail -n 12
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ terraform fmt -check && terraform validate
+Success! The configuration is valid.
+
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ 

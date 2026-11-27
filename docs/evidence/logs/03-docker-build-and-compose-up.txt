@@ -1,0 +1,68 @@
+aditya@lima-devops:~/devops-capstone$ cat Dockerfile
+FROM python:3.12-slim AS base
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /srv
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app app
+COPY wsgi.py gunicorn.conf.py ./
+
+FROM base AS test
+COPY requirements-dev.txt .
+RUN pip install --no-cache-dir -r requirements-dev.txt
+COPY pytest.ini .
+COPY tests tests
+CMD ["pytest", "-v"]
+
+FROM base AS runtime
+ARG APP_VERSION=dev
+ARG GIT_SHA=unknown
+ENV APP_VERSION=${APP_VERSION} GIT_SHA=${GIT_SHA}
+RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin eventhub
+USER 10001
+EXPOSE 8000
+CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]
+aditya@lima-devops:~/devops-capstone$ [ -f .env ] || printf 'POSTGRES_PASSWORD=%s\nAPP_VERSION=0.1.0\n' "$(openssl rand -hex 16)" > .env
+aditya@lima-devops:~/devops-capstone$ GIT_SHA=$(git rev-parse --short HEAD) docker compose up -d --build --quiet-pull
+[+] Building 1.1s (14/14) FINISHED                                                                                             
+ => [internal] load local bake definitions                                                                                0.0s
+ => => reading from stdin 613B                                                                                            0.0s
+ => [internal] load build definition from Dockerfile                                                                      0.0s
+ => => transferring dockerfile: 676B                                                                                      0.0s
+ => [internal] load metadata for docker.io/library/python:3.12-slim                                                       0.4s
+ => [internal] load .dockerignore                                                                                         0.0s
+ => => transferring context: 130B                                                                                         0.0s
+ => [base 1/6] FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296  0.0s
+ => => resolve docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4  0.0s
+ => [internal] load build context                                                                                         0.0s
+ => => transferring context: 439B                                                                                         0.0s
+ => CACHED [base 2/6] WORKDIR /srv                                                                                        0.0s
+ => CACHED [base 3/6] COPY requirements.txt .                                                                             0.0s
+ => CACHED [base 4/6] RUN pip install --no-cache-dir -r requirements.txt                                                  0.0s
+ => CACHED [base 5/6] COPY app app                                                                                        0.0s
+ => CACHED [base 6/6] COPY wsgi.py gunicorn.conf.py ./                                                                    0.0s
+ => [runtime 1/1] RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin eventhub                             0.4s
+ => exporting to image                                                                                                    0.1s
+ => => exporting layers                                                                                                   0.0s
+ => => exporting manifest sha256:cfbce3f02c65eb8dc162298fa5e6c85a53e24d0383300b0220b5c8ec4580af71                         0.0s
+ => => exporting config sha256:6a13f2fa31bb8f401e11783e1402e602164957a242f9f989a3231467cc224094                           0.0s
+ => => exporting attestation manifest sha256:defc123f2e30be9b0f94aa6fb35174d1b303c4e6d293adc0ed96df1d3d403a76             0.0s
+ => => exporting manifest list sha256:513a58edc09d0e7d6ae188ba457a215e935e30ab8711a77b70e34e60d50b76b5                    0.0s
+ => => naming to docker.io/library/eventhub:0.1.0                                                                         0.0s
+ => => unpacking to docker.io/library/eventhub:0.1.0                                                                      0.0s
+ => resolving provenance for metadata file                                                                                0.0s
+[+] up 5/5
+ ✔ Image eventhub:0.1.0     Built                                                                                          1.1s
+ ✔ Network eventhub_default Created                                                                                        0.0s
+ ✔ Volume eventhub_db-data  Created                                                                                        0.0s
+ ✔ Container eventhub-db-1  Healthy                                                                                        3.8s
+ ✔ Container eventhub-app-1 Started                                                                                        3.9s
+aditya@lima-devops:~/devops-capstone$ docker compose ps --format 'table {{.Service}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+SERVICE   IMAGE                STATUS                   PORTS
+app       eventhub:0.1.0       Up 1 second              127.0.0.1:8000->8000/tcp
+db        postgres:17-alpine   Up 5 seconds (healthy)   5432/tcp
+aditya@lima-devops:~/devops-capstone$ docker images eventhub
+                                                                                                           i Info →   U  In Use
+IMAGE            ID             DISK USAGE   CONTENT SIZE   EXTRA
+eventhub:0.1.0   513a58edc09d        235MB         50.9MB    U   
+aditya@lima-devops:~/devops-capstone$ 

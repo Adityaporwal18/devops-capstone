@@ -1,0 +1,15 @@
+aditya@lima-devops:~/devops-capstone$ NODE=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
+aditya@lima-devops:~/devops-capstone$ for n in 1 2 3 4 5; do curl -s -o /dev/null -w '%{http_code} ' -X POST http://$NODE:30080/api/events/1/registrations -H 'Content-Type: application/json' -d "{\"name\":\"Student $n\",\"email\":\"student$n@example.com\"}"; done; echo
+201 201 201 201 201 
+aditya@lima-devops:~/devops-capstone$ scripts/db-fingerprint.sh
+events=3 registrations=5 checksum=2ad539bcffca1852d44d54e087f2e482
+aditya@lima-devops:~/devops-capstone$ scripts/backup-now.sh
+backup written: /backups/eventhub-20261127T161715Z.sql.gz (1415 bytes)
+aditya@lima-devops:~/devops-capstone$ kubectl -n eventhub exec eventhub-db-0 -- psql -U eventhub -d eventhub -c 'TRUNCATE registrations, events'
+TRUNCATE TABLE
+aditya@lima-devops:~/devops-capstone$ scripts/db-fingerprint.sh
+events=0 registrations=0 checksum=d41d8cd98f00b204e9800998ecf8427e
+aditya@lima-devops:~/devops-capstone$ curl -s http://$NODE:30080/api/stats; echo
+{"events":0,"registrations":0,"seats":0,"seats_left":0}
+
+aditya@lima-devops:~/devops-capstone$ 

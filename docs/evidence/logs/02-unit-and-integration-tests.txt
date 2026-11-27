@@ -1,0 +1,91 @@
+aditya@lima-devops:~/devops-capstone$ scripts/test.sh
+== unit tests (no database) ==
+............................                                             [100%]
+28 passed in 0.26s
+== integration tests (API + PostgreSQL) ==
+#1 [internal] load local bake definitions
+#1 reading from stdin 540B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 676B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.4s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 130B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 645B done
+#5 DONE 0.0s
+
+#6 [base 1/6] FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
+#6 resolve docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b 0.0s done
+#6 DONE 0.0s
+
+#7 [base 4/6] RUN pip install --no-cache-dir -r requirements.txt
+#7 CACHED
+
+#8 [base 2/6] WORKDIR /srv
+#8 CACHED
+
+#9 [base 3/6] COPY requirements.txt .
+#9 CACHED
+
+#10 [test 2/4] RUN pip install --no-cache-dir -r requirements-dev.txt
+#10 CACHED
+
+#11 [base 5/6] COPY app app
+#11 CACHED
+
+#12 [base 6/6] COPY wsgi.py gunicorn.conf.py ./
+#12 CACHED
+
+#13 [test 1/4] COPY requirements-dev.txt .
+#13 CACHED
+
+#14 [test 3/4] COPY pytest.ini .
+#14 CACHED
+
+#15 [test 4/4] COPY tests tests
+#15 CACHED
+
+#16 exporting to image
+#16 exporting layers done
+#16 exporting manifest sha256:df36d443497505b8361668e5869ed08ecad271f85a2b675f85859f9e88438aa1 done
+#16 exporting config sha256:d391835229bb34e91bdadfa30438f07a4c95e5207d9ef0fd4243c735aa6ba5b9 done
+#16 exporting attestation manifest sha256:23bfabb5c681fa2398c7b0b00dc868f45e44b58cc068631000dd082d27bc752e done
+#16 exporting manifest list sha256:a8ad6b0a108b9ca9c7ec5fb0bff1209c9d2d0ad40923048a73c0ec50d24de25e done
+#16 naming to docker.io/library/eventhub-test-tests:latest done
+#16 unpacking to docker.io/library/eventhub-test-tests:latest done
+#16 DONE 0.0s
+
+#17 resolving provenance for metadata file
+#17 DONE 0.0s
+===================================================== test session starts =====================================================
+platform linux -- Python 3.12.16, pytest-9.2.0, pluggy-1.7.0 -- /usr/local/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /srv
+configfile: pytest.ini
+plugins: platformdirs-4.14.8
+collected 13 items                                                                                                            
+
+tests/test_api.py::test_liveness PASSED                                                                                 [  7%]
+tests/test_api.py::test_readiness_checks_the_database PASSED                                                            [ 15%]
+tests/test_api.py::test_version_reports_build_identity PASSED                                                           [ 23%]
+tests/test_api.py::test_responses_carry_track_header PASSED                                                             [ 30%]
+tests/test_api.py::test_create_event_is_stored_and_listed PASSED                                                        [ 38%]
+tests/test_api.py::test_create_event_rejects_invalid_data PASSED                                                        [ 46%]
+tests/test_api.py::test_registration_reduces_seats PASSED                                                               [ 53%]
+tests/test_api.py::test_duplicate_email_is_rejected PASSED                                                              [ 61%]
+tests/test_api.py::test_full_event_rejects_registration PASSED                                                          [ 69%]
+tests/test_api.py::test_registration_for_unknown_event PASSED                                                           [ 76%]
+tests/test_api.py::test_registrations_are_listed PASSED                                                                 [ 84%]
+tests/test_api.py::test_delete_event_removes_it_and_its_registrations PASSED                                            [ 92%]
+tests/test_api.py::test_metrics_expose_request_counter PASSED                                                           [100%]
+
+===================================================== 13 passed in 1.08s ======================================================
+aditya@lima-devops:~/devops-capstone$ 

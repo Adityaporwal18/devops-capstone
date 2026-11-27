@@ -1,0 +1,26 @@
+aditya@lima-devops:~/devops-capstone$ kubectl get deployments,statefulsets,cronjobs,services,pvc -n eventhub
+NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/eventhub-canary   0/0     0            0           43s
+deployment.apps/eventhub-stable   4/4     4            4           43s
+
+NAME                           READY   AGE
+statefulset.apps/eventhub-db   1/1     43s
+
+NAME                               SCHEDULE       TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+cronjob.batch/eventhub-db-backup   */30 * * * *   <none>     False     0        <none>          43s
+
+NAME                  TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+service/eventhub      NodePort    10.109.212.126   <none>        8000:30080/TCP   43s
+service/eventhub-db   ClusterIP   10.108.34.155    <none>        5432/TCP         43s
+
+NAME                                       STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/data-eventhub-db-0   Bound    pvc-0442dc7a-dc60-4572-8711-bda2f70b3a38   1Gi        RWO            standard       <unset>                 43s
+persistentvolumeclaim/eventhub-backups     Bound    pvc-cb4f9ffb-2a46-4071-a2c4-dc50e78f1e91   1Gi        RWO            standard       <unset>                 44s
+aditya@lima-devops:~/devops-capstone$ kubectl get pods -n eventhub -o wide
+NAME                               READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+eventhub-db-0                      1/1     Running   0          45s   10.244.0.14   capstone   <none>           <none>
+eventhub-stable-7d58bf94bc-mtzk4   1/1     Running   0          45s   10.244.0.13   capstone   <none>           <none>
+eventhub-stable-7d58bf94bc-mzxkr   1/1     Running   0          45s   10.244.0.11   capstone   <none>           <none>
+eventhub-stable-7d58bf94bc-qddpz   1/1     Running   0          45s   10.244.0.10   capstone   <none>           <none>
+eventhub-stable-7d58bf94bc-zjnnh   1/1     Running   0          45s   10.244.0.12   capstone   <none>           <none>
+aditya@lima-devops:~/devops-capstone$ 

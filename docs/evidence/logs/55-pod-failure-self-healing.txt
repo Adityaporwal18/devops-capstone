@@ -1,0 +1,19 @@
+aditya@lima-devops:~/devops-capstone$ kubectl get pods -n eventhub -l track=stable
+NAME                               READY   STATUS    RESTARTS   AGE
+eventhub-stable-6dd8597655-cxbzr   1/1     Running   0          2m19s
+eventhub-stable-6dd8597655-klcg5   1/1     Running   0          2m11s
+eventhub-stable-6dd8597655-nc2tx   1/1     Running   0          2m20s
+eventhub-stable-6dd8597655-s74f5   1/1     Running   0          2m12s
+aditya@lima-devops:~/devops-capstone$ POD=$(kubectl get pods -n eventhub -l track=stable -o name | head -n 1); START=$(date +%s%3N); kubectl delete -n eventhub $POD --wait=false; sleep 1; kubectl -n eventhub rollout status deployment/eventhub-stable --timeout=120s; echo "4 of 4 pods Ready again after $(( $(date +%s%3N) - START )) ms"
+pod "eventhub-stable-6dd8597655-cxbzr" deleted from eventhub namespace
+Waiting for deployment "eventhub-stable" rollout to finish: 3 of 4 updated replicas are available...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 of 4 updated replicas are available...
+deployment "eventhub-stable" successfully rolled out
+4 of 4 pods Ready again after 7253 ms
+aditya@lima-devops:~/devops-capstone$ kubectl get pods -n eventhub -l track=stable
+NAME                               READY   STATUS    RESTARTS   AGE
+eventhub-stable-6dd8597655-7vdls   1/1     Running   0          9s
+eventhub-stable-6dd8597655-klcg5   1/1     Running   0          2m22s
+eventhub-stable-6dd8597655-nc2tx   1/1     Running   0          2m31s
+eventhub-stable-6dd8597655-s74f5   1/1     Running   0          2m23s
+aditya@lima-devops:~/devops-capstone$ 

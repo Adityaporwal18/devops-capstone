@@ -1,0 +1,22 @@
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:9090/api/v1/query --data-urlencode 'query=sum by (track, status) (increase(eventhub_http_requests_total{route="/api/events"}[40m]))' | python3 -c 'import sys,json; [print(r["metric"], round(float(r["value"][1]))) for r in json.load(sys.stdin)["data"]["result"]]'
+{'status': '200', 'track': 'stable'} 5520
+{'status': '200', 'track': 'canary'} 177
+{'status': '500', 'track': 'canary'} 50
+{'status': '503', 'track': 'stable'} 17
+aditya@lima-devops:~/devops-capstone$ curl -s localhost:9090/api/v1/query --data-urlencode 'query=max_over_time(ALERTS{alertname="EventHubHighErrorRate"}[40m])' | python3 -c 'import sys,json; [print(r["metric"]) for r in json.load(sys.stdin)["data"]["result"]]'
+{'alertname': 'EventHubHighErrorRate', 'alertstate': 'pending', 'severity': 'critical', 'track': 'canary'}
+{'alertname': 'EventHubHighErrorRate', 'alertstate': 'firing', 'severity': 'critical', 'track': 'canary'}
+{'alertname': 'EventHubHighErrorRate', 'alertstate': 'pending', 'severity': 'critical', 'track': 'stable'}
+{'alertname': 'EventHubHighErrorRate', 'alertstate': 'firing', 'severity': 'critical', 'track': 'stable'}
+aditya@lima-devops:~/devops-capstone$ curl -s -G localhost:3100/loki/api/v1/query --data-urlencode 'query=sum by (track, level) (count_over_time({namespace="eventhub", app="eventhub"} | json level="level" [40m]))' | python3 -c 'import sys,json; [print(r["metric"], r["value"][1]) for r in json.load(sys.stdin)["data"]["result"]]'
+{'level': '', 'track': 'canary'} 28
+{'level': '', 'track': 'stable'} 128
+{'level': 'ERROR', 'track': 'canary'} 45
+{'level': 'ERROR', 'track': 'stable'} 27
+{'level': 'INFO', 'track': 'canary'} 247
+{'level': 'INFO', 'track': 'stable'} 5554
+{'level': 'WARNING', 'track': 'stable'} 25
+aditya@lima-devops:~/devops-capstone$ curl -s -G localhost:3100/loki/api/v1/query_range --data-urlencode 'query={namespace="eventhub", track="canary"} | json level="level" | level="ERROR"' --data-urlencode 'limit=2' --data-urlencode "start=$(date -d '-40 min' +%s)000000000" | python3 -c 'import sys,json; [print(v[1]) for s in json.load(sys.stdin)["data"]["result"] for v in s["values"]]'
+{"time": "2026-11-27T16:07:31+0000", "level": "ERROR", "message": "request", "version": "0.3.0", "track": "canary", "method": "GET", "path": "/api/events", "status": 500, "duration_ms": 0.22}
+{"time": "2026-11-27T16:07:23+0000", "level": "ERROR", "message": "request", "version": "0.3.0", "track": "canary", "method": "GET", "path": "/api/events", "status": 500, "duration_ms": 0.1}
+aditya@lima-devops:~/devops-capstone$ 

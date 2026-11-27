@@ -1,0 +1,8 @@
+aditya@lima-devops:~/devops-capstone$ docker compose exec app id
+uid=10001(eventhub) gid=10001(eventhub) groups=10001(eventhub)
+aditya@lima-devops:~/devops-capstone$ docker compose exec app sh -c 'touch /srv/test-file'
+touch: cannot touch '/srv/test-file': Read-only file system
+aditya@lima-devops:~/devops-capstone$ docker inspect eventhub-app-1 --format 'read-only root: {{.HostConfig.ReadonlyRootfs}} | dropped capabilities: {{.HostConfig.CapDrop}} | security options: {{.HostConfig.SecurityOpt}}'
+read-only root: true | dropped capabilities: [ALL] | security options: [no-new-privileges:true]
+aditya@lima-devops:~/devops-capstone$ git status --short
+aditya@lima-devops:~/devops-capstone$ 

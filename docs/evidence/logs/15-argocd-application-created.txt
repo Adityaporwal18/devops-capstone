@@ -1,0 +1,31 @@
+aditya@lima-devops:~/devops-capstone$ git add infrastructure deploy
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add infrastructure automation (Ansible, Terraform), Kubernetes manifests and Argo CD application"
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 2
+75ca90b (HEAD -> main, origin/main) Add infrastructure automation (Ansible, Terraform), Kubernetes manifests and Argo CD application
+798ef62 Add Docker Compose stack for the application and PostgreSQL
+aditya@lima-devops:~/devops-capstone$ cat infrastructure/argocd/application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: eventhub
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Adityaporwal18/devops-capstone.git
+    targetRevision: main
+    path: deploy/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: eventhub
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+aditya@lima-devops:~/devops-capstone$ kubectl apply -f infrastructure/argocd/application.yaml
+application.argoproj.io/eventhub created
+aditya@lima-devops:~/devops-capstone$ until [ "$(kubectl get application eventhub -n argocd -o jsonpath='{.status.health.status}')" = "Healthy" ]; do sleep 5; done; kubectl get application eventhub -n argocd
+NAME       SYNC STATUS   HEALTH STATUS
+eventhub   Synced        Healthy
+aditya@lima-devops:~/devops-capstone$ 

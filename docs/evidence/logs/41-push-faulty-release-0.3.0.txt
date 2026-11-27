@@ -1,0 +1,16 @@
+aditya@lima-devops:~/devops-capstone$ git add app/rules.py
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Fix seats_left: never report a negative number of seats"
+aditya@lima-devops:~/devops-capstone$ git diff release.env | tail -n 5
+@@ -1,2 +1,2 @@
+-APP_VERSION=0.2.0
+-FAULT_RATE=0
++APP_VERSION=0.3.0
++FAULT_RATE=0.5
+aditya@lima-devops:~/devops-capstone$ git commit -q -am "Release 0.3.0 with the fault switch on (deliberately faulty release to test the canary rollback)"
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 2
+df2f16d (HEAD -> main, origin/main) Release 0.3.0 with the fault switch on (deliberately faulty release to test the canary rollback)
+d9ab3e1 Fix seats_left: never report a negative number of seats
+aditya@lima-devops:~/devops-capstone$ date
+Fri Nov 27 21:35:22 IST 2026
+aditya@lima-devops:~/devops-capstone$ 

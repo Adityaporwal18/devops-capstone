@@ -1,0 +1,12 @@
+aditya@lima-devops:~/devops-capstone$ START=$(date +%s%3N); kubectl delete pod eventhub-db-0 -n eventhub; kubectl -n eventhub rollout status statefulset/eventhub-db --timeout=180s; echo "database pod Ready again after $(( $(date +%s%3N) - START )) ms"
+pod "eventhub-db-0" deleted from eventhub namespace
+Waiting for 1 pods to be ready...
+partitioned roll out complete: 1 new pods have been updated...
+database pod Ready again after 11741 ms
+aditya@lima-devops:~/devops-capstone$ scripts/db-fingerprint.sh
+events=3 registrations=5 checksum=2ad539bcffca1852d44d54e087f2e482
+aditya@lima-devops:~/devops-capstone$ kubectl get pvc -n eventhub
+NAME                 STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+data-eventhub-db-0   Bound    pvc-0442dc7a-dc60-4572-8711-bda2f70b3a38   1Gi        RWO            standard       <unset>                 34m
+eventhub-backups     Bound    pvc-cb4f9ffb-2a46-4071-a2c4-dc50e78f1e91   1Gi        RWO            standard       <unset>                 34m
+aditya@lima-devops:~/devops-capstone$ 

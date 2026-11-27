@@ -1,0 +1,27 @@
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ terraform plan -out=tfplan | grep -E "will be created|Plan:|sensitive"
+  # kubernetes_limit_range.app will be created
+  # kubernetes_namespace.app will be created
+  # kubernetes_namespace.monitoring will be created
+  # kubernetes_resource_quota.app will be created
+  # kubernetes_secret.database will be created
+      + data                           = (sensitive value)
+  # random_password.database will be created
+      + bcrypt_hash = (sensitive value)
+      + result      = (sensitive value)
+Plan: 6 to add, 0 to change, 0 to destroy.
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ terraform apply -auto-approve tfplan | tail -n 14
+kubernetes_secret.database: Creating...
+kubernetes_secret.database: Creation complete after 0s [id=eventhub/eventhub-db]
+kubernetes_resource_quota.app: Creation complete after 1s [id=eventhub/eventhub-quota]
+
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+database_secret = "eventhub/eventhub-db"
+namespaces = [
+  "eventhub",
+  "monitoring",
+]
+pod_quota = "20"
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ 

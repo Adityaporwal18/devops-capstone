@@ -1,0 +1,34 @@
+aditya@lima-devops:~/devops-capstone$ git pull -q --rebase
+error: cannot pull with rebase: You have unstaged changes.
+error: Please commit or stash them.
+aditya@lima-devops:~/devops-capstone$ cat docs/recovery-targets.md
+# Recovery targets
+
+These targets were written down before the recovery drill was run.
+
+| Objective | Target | How it is measured |
+|---|---|---|
+| RPO - database | At most 30 minutes of data loss | The backup CronJob runs every 30 minutes; an extra backup can be started by hand |
+| RTO - database restore | Data restored within 5 minutes | Millisecond timer in `scripts/restore-db.sh`, checked with `scripts/db-fingerprint.sh` |
+| RTO - application pod failure | Replaced and Ready within 60 seconds | Time from deleting a pod to 4 of 4 pods Ready |
+| RTO - faulty release | Canary removed within 2 minutes of its deployment | Git commit times of the canary and rollback commits made by the pipeline |
+| Configuration drift | Corrected within 60 seconds | Time from a manual `kubectl scale` to Argo CD restoring the Git value |
+
+**RTO** (Recovery Time Objective) is the longest acceptable time to restore service.
+**RPO** (Recovery Point Objective) is the largest acceptable data loss, expressed as time since the last good backup.
+aditya@lima-devops:~/devops-capstone$ git add -A
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Define recovery targets; add backup, restore and fingerprint scripts; limit pipeline triggers to application changes"
+aditya@lima-devops:~/devops-capstone$ git push -q
+To https://github.com/Adityaporwal18/devops-capstone.git
+ ! [rejected]        main -> main (fetch first)
+error: failed to push some refs to 'https://github.com/Adityaporwal18/devops-capstone.git'
+hint: Updates were rejected because the remote contains work that you do not
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+aditya@lima-devops:~/devops-capstone$ git log --format='%h  %cd  %s' --date=format:%H:%M:%S -n 1
+8869d60  21:45:32  Define recovery targets; add backup, restore and fingerprint scripts; limit pipeline triggers to application changes
+aditya@lima-devops:~/devops-capstone$ kubectl -n argocd annotate application eventhub-platform argocd.argoproj.io/refresh=hard --overwrite
+application.argoproj.io/eventhub-platform annotated
+aditya@lima-devops:~/devops-capstone$ 

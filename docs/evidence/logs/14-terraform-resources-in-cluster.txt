@@ -1,0 +1,31 @@
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ terraform state list
+kubernetes_limit_range.app
+kubernetes_namespace.app
+kubernetes_namespace.monitoring
+kubernetes_resource_quota.app
+kubernetes_secret.database
+random_password.database
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ kubectl get namespaces eventhub monitoring
+NAME         STATUS   AGE
+eventhub     Active   7s
+monitoring   Active   7s
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ kubectl describe resourcequota eventhub-quota -n eventhub | tail -n 7
+Namespace:       eventhub
+Resource         Used  Hard
+--------         ----  ----
+limits.memory    0     3Gi
+pods             0     20
+requests.cpu     0     2
+requests.memory  0     2Gi
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ kubectl describe secret eventhub-db -n eventhub | tail -n 5
+
+Data
+====
+DATABASE_URL:       80 bytes
+POSTGRES_PASSWORD:  32 bytes
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ terraform plan | tail -n 3
+
+Terraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+aditya@lima-devops:~/devops-capstone/infrastructure/terraform$ cd ~/devops-capstone
+aditya@lima-devops:~/devops-capstone$ 

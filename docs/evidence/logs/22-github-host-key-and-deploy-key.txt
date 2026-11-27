@@ -1,0 +1,11 @@
+aditya@lima-devops:/tmp$ ssh-keyscan -t ed25519 github.com 2>/dev/null | sudo -u jenkins tee /var/lib/jenkins/.ssh/known_hosts | ssh-keygen -lf -
+256 SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU github.com (ED25519)
+aditya@lima-devops:/tmp$ ssh-keygen -q -t ed25519 -N '' -C eventhub-jenkins-gitops -f /tmp/gitops_key
+aditya@lima-devops:/tmp$ gh repo deploy-key add /tmp/gitops_key.pub --repo Adityaporwal18/devops-capstone --allow-write --title "Jenkins GitOps key (EventHub pipeline)"
+✓ Deploy key added to Adityaporwal18/devops-capstone
+aditya@lima-devops:/tmp$ gh repo deploy-key list --repo Adityaporwal18/devops-capstone
+ID         TITLE                                   TYPE        KEY                                       CREATED AT            
+171335030  Jenkins GitOps key (EventHub pipeline)  read-write  ssh-ed25519 AAAAC3N...oBRQVgrw4H63rg8+5a  less than a minute ago
+aditya@lima-devops:/tmp$ sudo systemctl restart jenkins
+aditya@lima-devops:/tmp$ cd ~/devops-capstone
+aditya@lima-devops:~/devops-capstone$ 

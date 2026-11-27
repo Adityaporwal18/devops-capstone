@@ -1,0 +1,518 @@
+Started by user Aditya Porwal
+Obtained Jenkinsfile from git https://github.com/Adityaporwal18/devops-capstone.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/devops-capstone
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+DEPRECATED: Message exclusion during polling is deprecated for Pipeline jobs. Use the Pipeline SCM trait instead.
+Cloning the remote Git repository
+Cloning repository https://github.com/Adityaporwal18/devops-capstone.git
+ > git init /var/lib/jenkins/workspace/devops-capstone # timeout=10
+Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Adityaporwal18/devops-capstone.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision ca391aac6641cde8e919318d16a2ecfe9761dcc8 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f ca391aac6641cde8e919318d16a2ecfe9761dcc8 # timeout=10
+Commit message: "Add Jenkins pipeline: tests, security scans, image build, GitOps canary deployment, analysis and promotion"
+First time build. Skipping changelog.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 40 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+DEPRECATED: Message exclusion during polling is deprecated for Pipeline jobs. Use the Pipeline SCM trait instead.
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/devops-capstone/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/Adityaporwal18/devops-capstone.git # timeout=10
+Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision ca391aac6641cde8e919318d16a2ecfe9761dcc8 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f ca391aac6641cde8e919318d16a2ecfe9761dcc8 # timeout=10
+Commit message: "Add Jenkins pipeline: tests, security scans, image build, GitOps canary deployment, analysis and promotion"
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] sh
++ grep -c skip ci
++ git log -1 --pretty=%s
++ true
+[Pipeline] sh
++ . ./release.env
++ APP_VERSION=0.1.0
++ FAULT_RATE=0
++ echo 0.1.0
+[Pipeline] sh
++ . ./release.env
++ APP_VERSION=0.1.0
++ FAULT_RATE=0
++ echo 0
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ mkdir -p reports
++ echo Release 0.1.0, commit ca391aa
+Release 0.1.0, commit ca391aa
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Release pipeline)
+[Pipeline] stage
+[Pipeline] { (Unit tests)
+[Pipeline] sh
++ docker build -q --target test -t eventhub-test:ca391aa .
+sha256:ade543940b4678f2dd30c5f19f51ee32ab09c892e0f40a7677284de2b2224d1e
+[Pipeline] sh
++ docker run --rm eventhub-test:ca391aa pytest -v tests/test_rules.py
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-9.2.0, pluggy-1.7.0 -- /usr/local/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /srv
+configfile: pytest.ini
+plugins: platformdirs-4.14.8
+collecting ... collected 28 items
+
+tests/test_rules.py::test_clean_event_accepts_valid_data PASSED          [  3%]
+tests/test_rules.py::test_clean_event_trims_text PASSED                  [  7%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[] PASSED         [ 10%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[ab] PASSED       [ 14%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[title2] PASSED   [ 17%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[None] PASSED     [ 21%]
+tests/test_rules.py::test_clean_event_rejects_bad_title[42] PASSED       [ 25%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[0] PASSED     [ 28%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[-5] PASSED    [ 32%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[5001] PASSED  [ 35%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[40] PASSED    [ 39%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[12.5] PASSED  [ 42%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[True] PASSED  [ 46%]
+tests/test_rules.py::test_clean_event_rejects_bad_capacity[None] PASSED  [ 50%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[] PASSED          [ 53%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[10-12-2026] PASSED [ 57%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[2026-13-01] PASSED [ 60%]
+tests/test_rules.py::test_clean_event_rejects_bad_date[tomorrow] PASSED  [ 64%]
+tests/test_rules.py::test_clean_event_requires_an_object PASSED          [ 67%]
+tests/test_rules.py::test_clean_registration_lowercases_email PASSED     [ 71%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[] PASSED  [ 75%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[no-at-sign] PASSED [ 78%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[a@b] PASSED [ 82%]
+tests/test_rules.py::test_clean_registration_rejects_bad_email[two words@example.com] PASSED [ 85%]
+tests/test_rules.py::test_clean_registration_requires_name PASSED        [ 89%]
+tests/test_rules.py::test_seats_left_counts_down PASSED                  [ 92%]
+tests/test_rules.py::test_seats_left_never_negative PASSED               [ 96%]
+tests/test_rules.py::test_is_full PASSED                                 [100%]
+
+============================== 28 passed in 0.71s ==============================
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Integration tests)
+[Pipeline] sh
++ docker compose -p eventhub-ci-1 -f compose.test.yml run --rm --build --quiet-pull tests
+ Network eventhub-ci-1_default Creating 
+ Network eventhub-ci-1_default Created 
+ Container eventhub-ci-1-db-1 Creating 
+ Container eventhub-ci-1-db-1 Created 
+ Container eventhub-ci-1-db-1 Starting 
+ Container eventhub-ci-1-db-1 Started 
+ Image eventhub-ci-1-tests Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 568B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 718B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 0.4s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 130B 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 645B done
+#5 DONE 0.0s
+
+#6 [base 1/6] FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
+#6 resolve docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b 0.1s done
+#6 DONE 0.1s
+
+#7 [base 6/6] COPY wsgi.py gunicorn.conf.py ./
+#7 CACHED
+
+#8 [base 4/6] RUN pip install --no-cache-dir -r requirements.txt
+#8 CACHED
+
+#9 [test 3/4] COPY pytest.ini .
+#9 CACHED
+
+#10 [base 2/6] WORKDIR /srv
+#10 CACHED
+
+#11 [base 3/6] COPY requirements.txt .
+#11 CACHED
+
+#12 [base 5/6] COPY app app
+#12 CACHED
+
+#13 [test 1/4] COPY requirements-dev.txt .
+#13 CACHED
+
+#14 [test 2/4] RUN pip install --no-cache-dir -r requirements-dev.txt
+#14 CACHED
+
+#15 [test 4/4] COPY tests tests
+#15 CACHED
+
+#16 exporting to image
+#16 exporting layers done
+#16 exporting manifest sha256:9398516d40e663edc3ee9d0aa4b6fe95539231413f92b9caffc3af06a21b291c 0.0s done
+#16 exporting config sha256:67aff45c84afd5b9b16cf5b1ddc9ecbdf7c98424c259d3defe6dfba9a00e8594 0.0s done
+#16 exporting attestation manifest sha256:ee337262db309e4d280ad144aaae515ee15ab6cddf959d8b8f3724054fdeec45 0.0s done
+#16 exporting manifest list sha256:c30bdb823b918d7ca28c0b5c6e4eb40e8b0413981dfa1c206bbe72376b86242c
+#16 exporting manifest list sha256:c30bdb823b918d7ca28c0b5c6e4eb40e8b0413981dfa1c206bbe72376b86242c done
+#16 naming to docker.io/library/eventhub-ci-1-tests:latest done
+#16 unpacking to docker.io/library/eventhub-ci-1-tests:latest done
+#16 DONE 0.1s
+
+#17 resolving provenance for metadata file
+#17 DONE 0.0s
+ Image eventhub-ci-1-tests Built 
+ Container eventhub-ci-1-db-1 Waiting 
+ Container eventhub-ci-1-db-1 Healthy 
+ Container eventhub-ci-1-tests-run-0b7fa2919f90 Creating 
+ Container eventhub-ci-1-tests-run-0b7fa2919f90 Created 
+============================= test session starts ==============================
+platform linux -- Python 3.12.16, pytest-9.2.0, pluggy-1.7.0 -- /usr/local/bin/python3.12
+cachedir: .pytest_cache
+rootdir: /srv
+configfile: pytest.ini
+plugins: platformdirs-4.14.8
+collecting ... collected 13 items
+
+tests/test_api.py::test_liveness PASSED                                  [  7%]
+tests/test_api.py::test_readiness_checks_the_database PASSED             [ 15%]
+tests/test_api.py::test_version_reports_build_identity PASSED            [ 23%]
+tests/test_api.py::test_responses_carry_track_header PASSED              [ 30%]
+tests/test_api.py::test_create_event_is_stored_and_listed PASSED         [ 38%]
+tests/test_api.py::test_create_event_rejects_invalid_data PASSED         [ 46%]
+tests/test_api.py::test_registration_reduces_seats PASSED                [ 53%]
+tests/test_api.py::test_duplicate_email_is_rejected PASSED               [ 61%]
+tests/test_api.py::test_full_event_rejects_registration PASSED           [ 69%]
+tests/test_api.py::test_registration_for_unknown_event PASSED            [ 76%]
+tests/test_api.py::test_registrations_are_listed PASSED                  [ 84%]
+tests/test_api.py::test_delete_event_removes_it_and_its_registrations PASSED [ 92%]
+tests/test_api.py::test_metrics_expose_request_counter PASSED            [100%]
+
+============================== 13 passed in 1.87s ==============================
+Post stage
+[Pipeline] sh
++ docker compose -p eventhub-ci-1 -f compose.test.yml down -v --rmi local
+ Container eventhub-ci-1-db-1 Stopping 
+ Container eventhub-ci-1-db-1 Stopped 
+ Container eventhub-ci-1-db-1 Removing 
+ Container eventhub-ci-1-db-1 Removed 
+ Network eventhub-ci-1_default Removing 
+ Network eventhub-ci-1_default Removed 
+ Image eventhub-ci-1-tests:latest Removing 
+ Image eventhub-ci-1-tests:latest Removed 
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Static analysis)
+[Pipeline] sh
++ docker run --rm eventhub-test:ca391aa bandit -r app wsgi.py gunicorn.conf.py -f txt
+[main]	INFO	profile include tests: None
+[main]	INFO	profile exclude tests: None
+[main]	INFO	cli include tests: None
+[main]	INFO	cli exclude tests: None
+[main]	INFO	running on Python 3.12.16
++ true
++ cat reports/bandit.txt
+Run started:2026-11-27 15:53:17.988379+00:00
+
+Test results:
+>> Issue: [B108:hardcoded_tmp_directory] Probable insecure usage of temp file/directory.
+   Severity: Medium   Confidence: Medium
+   CWE: CWE-377 (https://cwe.mitre.org/data/definitions/377.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/plugins/b108_hardcoded_tmp_directory.html
+   Location: ./gunicorn.conf.py:5:17
+4	worker_class = "gthread"
+5	worker_tmp_dir = "/dev/shm"
+6	accesslog = None
+
+--------------------------------------------------
+>> Issue: [B311:blacklist] Standard pseudo-random generators are not suitable for security/cryptographic purposes.
+   Severity: Low   Confidence: High
+   CWE: CWE-330 (https://cwe.mitre.org/data/definitions/330.html)
+   More Info: https://bandit.readthedocs.io/en/1.9.4/blacklists/blacklist_calls.html#b311-random
+   Location: app/telemetry.py:51:63
+50	        g.started = time.perf_counter()
+51	        if fault_rate and request.path.startswith("/api/") and random.random() < fault_rate:
+52	            return jsonify(error="injected fault (FAULT_RATE test switch)"), 500
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 316
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 1
+		Medium: 1
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 1
+		High: 1
+Files skipped (0):
++ echo Gate: the build fails on any HIGH severity finding
+Gate: the build fails on any HIGH severity finding
++ docker run --rm eventhub-test:ca391aa bandit -r app wsgi.py gunicorn.conf.py -lll -q
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Dependency audit)
+[Pipeline] sh
++ status=0
++ docker run --rm eventhub-test:ca391aa pip-audit -r requirements.txt
++ cat reports/pip-audit.txt
+No known vulnerabilities found
++ exit 0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build image)
+[Pipeline] sh
++ docker build -q --target runtime --build-arg APP_VERSION=0.1.0 --build-arg GIT_SHA=ca391aa --build-arg FAULT_RATE=0 -t adityaporwal18/eventhub:ca391aa .
+sha256:3738402ba08d782c036a97b5a9b6192fdc087dbabcae079d702f4da479099796
++ docker images adityaporwal18/eventhub
+IMAGE                             ID             DISK USAGE   CONTENT SIZE   EXTRA
+adityaporwal18/eventhub:0.1.0     513a58edc09d        235MB         50.9MB        
+adityaporwal18/eventhub:ca391aa   3738402ba08d        235MB         50.9MB        
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Image scan)
+[Pipeline] sh
++ trivy image --no-progress --severity HIGH,CRITICAL --ignore-unfixed --format table --output reports/trivy.txt adityaporwal18/eventhub:ca391aa
+2026-11-27T21:23:38+05:30	INFO	[vulndb] Need to update DB
+2026-11-27T21:23:38+05:30	INFO	[vulndb] Downloading vulnerability DB...
+2026-11-27T21:23:38+05:30	INFO	[vulndb] Downloading artifact...	repo="mirror.gcr.io/aquasec/trivy-db:2"
+2026-11-27T21:24:02+05:30	INFO	[vulndb] Artifact successfully downloaded	repo="mirror.gcr.io/aquasec/trivy-db:2"
+2026-11-27T21:24:02+05:30	INFO	[vuln] Vulnerability scanning is enabled
+2026-11-27T21:24:02+05:30	INFO	[secret] Secret scanning is enabled
+2026-11-27T21:24:02+05:30	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-11-27T21:24:02+05:30	INFO	[secret] Please see https://trivy.dev/docs/v0.76/guide/scanner/secret#recommendation for faster secret detection
+2026-11-27T21:24:04+05:30	INFO	[python] Licenses acquired from one or more METADATA files may be subject to additional terms. Use `--debug` flag to see all affected packages.
+2026-11-27T21:24:05+05:30	INFO	Detected OS	family="debian" version="13.8"
+2026-11-27T21:24:05+05:30	INFO	[debian] Detecting vulnerabilities...	os_version="13" pkg_num=87
+2026-11-27T21:24:05+05:30	INFO	Number of language-specific files	num=1
+2026-11-27T21:24:05+05:30	INFO	[python-pkg] Detecting vulnerabilities...
+2026-11-27T21:24:05+05:30	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.76/guide/scanner/vulnerability#severity-selection for details.
++ grep -E Total:|^Python|\(debian reports/trivy.txt
+│ adityaporwal18/eventhub:ca391aa (debian 13.8)                                    │   debian   │        1        │    -    │
+adityaporwal18/eventhub:ca391aa (debian 13.8)
+Total: 1 (HIGH: 1, CRITICAL: 0)
++ echo Gate: the build fails on CRITICAL vulnerabilities that have a fix
+Gate: the build fails on CRITICAL vulnerabilities that have a fix
++ trivy image --no-progress --quiet --severity CRITICAL --ignore-unfixed --exit-code 1 adityaporwal18/eventhub:ca391aa
+
+Report Summary
+
+┌──────────────────────────────────────────────────────────────────────────────────┬────────────┬─────────────────┬─────────┐
+│                                      Target                                      │    Type    │ Vulnerabilities │ Secrets │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ adityaporwal18/eventhub:ca391aa (debian 13.8)                                    │   debian   │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/blinker-1.9.0.dist-info/METADATA          │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/click-8.5.1.dist-info/METADATA            │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/flask-3.1.3.dist-info/METADATA            │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/gunicorn-24.1.1.dist-info/METADATA        │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/itsdangerous-2.2.0.dist-info/METADATA     │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/jinja2-3.1.6.dist-info/METADATA           │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/markupsafe-3.0.4.dist-info/METADATA       │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/packaging-26.4.dist-info/METADATA         │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/pip-25.0.1.dist-info/METADATA             │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/prometheus_client-0.26.0.dist-info/METAD- │ python-pkg │        0        │    -    │
+│ ATA                                                                              │            │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/psycopg-3.3.9.dist-info/METADATA          │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/psycopg_binary-3.3.9.dist-info/METADATA   │ python-pkg │        0        │    -    │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/typing_extensions-4.16.0.dist-info/METAD- │ python-pkg │        0        │    -    │
+│ ATA                                                                              │            │                 │         │
+├──────────────────────────────────────────────────────────────────────────────────┼────────────┼─────────────────┼─────────┤
+│ usr/local/lib/python3.12/site-packages/werkzeug-3.1.9.dist-info/METADATA         │ python-pkg │        0        │    -    │
+└──────────────────────────────────────────────────────────────────────────────────┴────────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push image)
+[Pipeline] sh
++ docker push -q adityaporwal18/eventhub:ca391aa
+docker.io/adityaporwal18/eventhub:ca391aa
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy canary)
+[Pipeline] withCredentials
+Masking supported pattern matches of $GITOPS_KEY
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ scripts/gitops.sh canary ca391aa
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ scripts/wait-rollout.sh c4f6700c3b7bf767b45de120046d035af289214f eventhub-canary
+Argo CD synced Git revision c4f6700
+Waiting for deployment "eventhub-canary" rollout to finish: 0 of 1 updated replicas are available...
+deployment "eventhub-canary" successfully rolled out
+[Pipeline] sh
++ sudo -H -u aditya kubectl --context capstone -n eventhub get pods -L track
+NAME                               READY   STATUS    RESTARTS   AGE   TRACK
+eventhub-canary-7f5557c847-8gnhz   1/1     Running   0          9s    canary
+eventhub-db-0                      1/1     Running   0          11m   
+eventhub-stable-7d58bf94bc-mtzk4   1/1     Running   0          11m   stable
+eventhub-stable-7d58bf94bc-mzxkr   1/1     Running   0          11m   stable
+eventhub-stable-7d58bf94bc-qddpz   1/1     Running   0          11m   stable
+eventhub-stable-7d58bf94bc-zjnnh   1/1     Running   0          11m   stable
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Canary analysis)
+[Pipeline] sh
++ scripts/canary-check.sh 300
+Canary analysis: 300 requests to http://192.168.58.2:30080/api/events
+track     requests   failed  error-rate    avg-ms
+stable         239        0        0.0%       9.1
+canary          61        0        0.0%       8.8
+Policy: roll back if the canary's error rate is above 2%, its average response time is
+        above 500 ms, or it received fewer than 20 requests.
+DECISION: PROMOTE - the canary is within the policy
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Promote)
+[Pipeline] withCredentials
+Masking supported pattern matches of $GITOPS_KEY
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] sh
++ scripts/gitops.sh promote ca391aa
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
++ scripts/wait-rollout.sh 7770c067035337e821dcffb0b10c165d7bf0acd7 eventhub-stable eventhub-canary
+Argo CD synced Git revision 7770c06
+Waiting for deployment "eventhub-stable" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 2 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 out of 4 new replicas have been updated...
+Waiting for deployment "eventhub-stable" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "eventhub-stable" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "eventhub-stable" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "eventhub-stable" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 of 4 updated replicas are available...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 of 4 updated replicas are available...
+Waiting for deployment "eventhub-stable" rollout to finish: 3 of 4 updated replicas are available...
+deployment "eventhub-stable" successfully rolled out
+deployment "eventhub-canary" successfully rolled out
+[Pipeline] sh
++ sudo -H -u aditya kubectl --context capstone -n eventhub get deployments -o wide
+NAME              READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                            SELECTOR
+eventhub-canary   0/0     0            0           11m   eventhub     adityaporwal18/eventhub:ca391aa   app=eventhub,track=canary
+eventhub-stable   4/4     4            4           11m   eventhub     adityaporwal18/eventhub:ca391aa   app=eventhub,track=stable
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] sh
++ docker rmi -f eventhub-test:ca391aa
+[Pipeline] script
+[Pipeline] {
+[Pipeline] echo
+Release 0.1.0 (ca391aa) passed the canary analysis and is now the stable version.
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

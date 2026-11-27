@@ -1,0 +1,33 @@
+Started on Nov 27, 2026, 9:57:57 PM
+Using strategy: Default
+[poll] Last Built Revision: Revision 139f0d6173d1e90a0029da6bfdc4d144d2c51f98 (refs/remotes/origin/main)
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/devops-capstone/.git # timeout=10
+Fetching changes from the remote Git repositories
+ > git config remote.origin.url https://github.com/Adityaporwal18/devops-capstone.git # timeout=10
+Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Polling for changes in
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git log --full-history --no-abbrev --format=raw -M -m 139f0d6173d1e90a0029da6bfdc4d144d2c51f98..686d534ac562aceeab1cfe7159c9bb8a214a6689 # timeout=10
+Using strategy: Default
+[poll] Last Built Revision: Revision 139f0d6173d1e90a0029da6bfdc4d144d2c51f98 (refs/remotes/origin/main)
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/devops-capstone/.git # timeout=10
+Fetching changes from the remote Git repositories
+ > git config remote.origin.url https://github.com/Adityaporwal18/devops-capstone.git # timeout=10
+Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Polling for changes in
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+ > git log --full-history --no-abbrev --format=raw -M -m 139f0d6173d1e90a0029da6bfdc4d144d2c51f98..686d534ac562aceeab1cfe7159c9bb8a214a6689 # timeout=10
+Done. Took 2.2 sec
+Changes found
