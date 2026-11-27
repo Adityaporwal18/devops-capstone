@@ -6,7 +6,7 @@ metadata:
     app: eventhub
     track: canary
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       app: eventhub
@@ -29,7 +29,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: eventhub
-          image: adityaporwal18/eventhub:ca391aa
+          image: adityaporwal18/eventhub:906fe38
           ports:
             - containerPort: 8000
           env:
