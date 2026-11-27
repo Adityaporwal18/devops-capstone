@@ -52,6 +52,11 @@ def create_app():
         telemetry.log.info("registration accepted", extra={"fields": {"event_id": event_id}})
         return jsonify(present_registration(registration)), 201
 
+    @app.get("/api/stats")
+    def stats():
+        totals = db.stats()
+        return jsonify(**totals, seats_left=seats_left(totals["seats"], totals["registrations"]))
+
     @app.get("/api/version")
     def version():
         return jsonify(version=telemetry.VERSION, git_sha=telemetry.GIT_SHA, track=telemetry.TRACK)

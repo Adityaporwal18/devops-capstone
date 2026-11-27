@@ -79,6 +79,15 @@ def ping():
         conn.execute("SELECT 1")
 
 
+def stats():
+    with connection() as conn:
+        return conn.execute(
+            "SELECT (SELECT count(*) FROM events)::int AS events, "
+            "(SELECT count(*) FROM registrations)::int AS registrations, "
+            "(SELECT COALESCE(sum(capacity), 0) FROM events)::int AS seats"
+        ).fetchone()
+
+
 def list_events():
     with connection() as conn:
         return conn.execute(ALL_EVENTS).fetchall()

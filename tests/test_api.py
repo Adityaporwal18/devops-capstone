@@ -78,3 +78,12 @@ def test_metrics_expose_request_counter(client):
     text = client.get("/metrics").get_data(as_text=True)
     assert "eventhub_http_requests_total" in text
     assert "eventhub_build_info" in text
+
+
+def test_stats_count_events_registrations_and_seats(client, event):
+    register(client, event["id"])
+    assert client.get("/api/stats").get_json() == {"events": 1, "registrations": 1, "seats": 2, "seats_left": 1}
+
+
+def test_stats_are_zero_without_events(client):
+    assert client.get("/api/stats").get_json() == {"events": 0, "registrations": 0, "seats": 0, "seats_left": 0}

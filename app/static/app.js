@@ -1,5 +1,6 @@
 const eventsBox = document.getElementById("events");
 const message = document.getElementById("message");
+const statsBox = document.getElementById("stats");
 
 function show(text, isError = false) {
   message.textContent = text;
@@ -66,8 +67,19 @@ function eventCard(event) {
   return card;
 }
 
+function statCard(value, label) {
+  const card = element("div", undefined, "stat");
+  card.append(element("strong", String(value)), element("span", label));
+  return card;
+}
+
 async function refresh() {
-  const events = await api("/api/events");
+  const [events, stats] = await Promise.all([api("/api/events"), api("/api/stats")]);
+  statsBox.replaceChildren(
+    statCard(stats.events, "events"),
+    statCard(stats.registrations, "registrations"),
+    statCard(stats.seats_left, "seats left"),
+  );
   eventsBox.replaceChildren(...(events.length ? events.map(eventCard) : [element("p", "No events yet.", "meta")]));
 }
 
