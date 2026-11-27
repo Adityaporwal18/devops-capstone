@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EventHub</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>EventHub</h1>
+      <p>Campus event registration</p>
+    </div>
+    <span class="badge">version {{ version }} &middot; {{ track }}</span>
+  </header>
+  <main>
+    <section class="card">
+      <h2>Add an event</h2>
+      <form id="event-form">
+        <label>Title <input name="title" required minlength="3" maxlength="120"></label>
+        <label>Venue <input name="venue" required minlength="2" maxlength="120"></label>
+        <label>Date <input name="event_date" type="date" required></label>
+        <label>Seats <input name="capacity" type="number" min="1" max="5000" required></label>
+        <button type="submit">Add event</button>
+      </form>
+      <p id="message" role="status"></p>
+    </section>
+    <section>
+      <h2>Events</h2>
+      <div id="events"></div>
+    </section>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
