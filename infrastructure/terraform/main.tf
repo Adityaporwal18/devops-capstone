@@ -75,3 +75,18 @@ resource "kubernetes_secret" "database" {
     DATABASE_URL      = "postgresql://eventhub:${random_password.database.result}@eventhub-db:5432/eventhub"
   }
 }
+
+resource "random_password" "grafana" {
+  length  = 24
+  special = false
+}
+
+resource "kubernetes_secret" "grafana" {
+  metadata {
+    name      = "grafana-admin"
+    namespace = kubernetes_namespace.monitoring.metadata[0].name
+  }
+  data = {
+    password = random_password.grafana.result
+  }
+}
