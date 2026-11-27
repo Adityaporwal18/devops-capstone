@@ -346,5 +346,18 @@ Evidence IDs (E01...) match docs/EVIDENCE.md.
   ~/devops-capstone$ scripts/db-fingerprint.sh
   ~/devops-capstone$ kubectl get pvc -n eventhub
 
+16. REPOSITORY AND EXECUTION STEPS
+----------------------------------
+
+[E67] Documentation committed and pushed
+  ~/devops-capstone$ git pull -q --rebase
+  ~/devops-capstone$ git status --short | wc -l
+  ~/devops-capstone$ git add -A
+  ~/devops-capstone$ git commit -q -m "Add README with execution steps, capstone report, evidence gallery and command record"
+  ~/devops-capstone$ git push -q
+  ~/devops-capstone$ git log --oneline -n 3
+  ~/devops-capstone$ git status -sb
+  ~/devops-capstone$ date
+
 Repository: https://github.com/Adityaporwal18/devops-capstone
 Docker Hub:  https://hub.docker.com/r/adityaporwal18/eventhub

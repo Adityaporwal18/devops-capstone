@@ -20,6 +20,7 @@ Evidence is grouped by the sections of the report. The number at the start of ea
 | [10. Monitoring and logging](#10-monitoring-and-logging) | E53-E57 |
 | [11. Security](#11-security) | E58-E60 |
 | [12. Recoverability](#12-recoverability) | E61-E66 |
+| [16. Repository and execution steps](#16-repository-and-execution-steps) | E67-E68 |
 
 ## 3. Application and version control
 
@@ -285,7 +286,7 @@ Source: [Terminal log](evidence/logs/66-rebase-and-push-operations-commits.txt)
 
 ### E35 - Polling ignores non-application commits
 
-The Git polling log after the documentation push: the commits are ignored and the result is **No changes**, so documentation does not trigger a release.
+The Git polling log after the documentation push (22:18 IST). The documentation commit is ignored because none of its paths belong to the application (`No paths matched included region whitelist`), the pipeline's two deployment commits are ignored because of `[skip ci]`, and the result is **No changes**: no build is started.
 
 ![E35 Polling ignores non-application commits](evidence/screenshots/64-jenkins-polling-ignores-non-application-commits.png)
 
@@ -530,3 +531,19 @@ The database pod is deleted and is Ready again after **11,741 ms**. The fingerpr
 ![E66 Database pod recreated](evidence/screenshots/59-database-pod-recreated-data-kept.png)
 
 Source: [Terminal log](evidence/logs/59-database-pod-recreated-data-kept.txt)
+
+## 16. Repository and execution steps
+
+### E67 - Documentation committed and pushed
+
+The README, report, evidence gallery, command record and screenshots are committed and pushed.
+
+![E67 Documentation committed and pushed](evidence/screenshots/67-commit-and-push-documentation.png)
+
+Source: [Terminal log](evidence/logs/67-commit-and-push-documentation.txt)
+
+### E68 - Repository on GitHub
+
+The repository `Adityaporwal18/devops-capstone` on GitHub with the source, pipeline, infrastructure and deployment files and the documentation.
+
+![E68 Repository on GitHub](evidence/screenshots/68-github-final-repository.png)

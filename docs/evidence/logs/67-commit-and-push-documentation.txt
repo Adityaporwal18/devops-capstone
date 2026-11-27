@@ -1,0 +1,15 @@
+aditya@lima-devops:~/devops-capstone$ git pull -q --rebase
+aditya@lima-devops:~/devops-capstone$ git status --short | wc -l
+5
+aditya@lima-devops:~/devops-capstone$ git add -A
+aditya@lima-devops:~/devops-capstone$ git commit -q -m "Add README with execution steps, capstone report, evidence gallery and command record"
+aditya@lima-devops:~/devops-capstone$ git push -q
+aditya@lima-devops:~/devops-capstone$ git log --oneline -n 3
+fcfd432 (HEAD -> main, origin/main) Add README with execution steps, capstone report, evidence gallery and command record
+883a7d6 deploy: promote 686d534 to stable [skip ci]
+544baf0 deploy: canary 686d534 on 1 of 5 pods [skip ci]
+aditya@lima-devops:~/devops-capstone$ git status -sb
+## main...origin/main
+aditya@lima-devops:~/devops-capstone$ date
+Fri Nov 27 22:14:44 IST 2026
+aditya@lima-devops:~/devops-capstone$ 

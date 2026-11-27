@@ -1,6 +1,6 @@
-Started on Nov 27, 2026, 9:57:57 PM
+Started on Nov 27, 2026, 10:25:54 PM
 Using strategy: Default
-[poll] Last Built Revision: Revision 139f0d6173d1e90a0029da6bfdc4d144d2c51f98 (refs/remotes/origin/main)
+[poll] Last Built Revision: Revision 686d534ac562aceeab1cfe7159c9bb8a214a6689 (refs/remotes/origin/main)
 Selected Git installation does not exist. Using Default
 The recommended git tool is: NONE
 No credentials specified
@@ -13,9 +13,14 @@ Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone
  > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
 Polling for changes in
  > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
- > git log --full-history --no-abbrev --format=raw -M -m 139f0d6173d1e90a0029da6bfdc4d144d2c51f98..686d534ac562aceeab1cfe7159c9bb8a214a6689 # timeout=10
+ > git log --full-history --no-abbrev --format=raw -M -m --raw 686d534ac562aceeab1cfe7159c9bb8a214a6689..fcfd4326971a75eab3908c884969db19a12cad81 # timeout=10
+Ignored commit fcfd4326971a75eab3908c884969db19a12cad81: No paths matched included region whitelist
+Ignored commit 883a7d66f00ab40f4c6b85f4a93ba6eaca85c5e9: Found excluded message: deploy: promote 686d534 to stable [skip ci]
+
+Ignored commit 544baf0a70cd00510c1ffedc2fb7a44282fe1c97: Found excluded message: deploy: canary 686d534 on 1 of 5 pods [skip ci]
+
 Using strategy: Default
-[poll] Last Built Revision: Revision 139f0d6173d1e90a0029da6bfdc4d144d2c51f98 (refs/remotes/origin/main)
+[poll] Last Built Revision: Revision 686d534ac562aceeab1cfe7159c9bb8a214a6689 (refs/remotes/origin/main)
 Selected Git installation does not exist. Using Default
 The recommended git tool is: NONE
 No credentials specified
@@ -28,6 +33,11 @@ Fetching upstream changes from https://github.com/Adityaporwal18/devops-capstone
  > git fetch --tags --force --progress -- https://github.com/Adityaporwal18/devops-capstone.git +refs/heads/*:refs/remotes/origin/* # timeout=10
 Polling for changes in
  > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
- > git log --full-history --no-abbrev --format=raw -M -m 139f0d6173d1e90a0029da6bfdc4d144d2c51f98..686d534ac562aceeab1cfe7159c9bb8a214a6689 # timeout=10
-Done. Took 2.2 sec
-Changes found
+ > git log --full-history --no-abbrev --format=raw -M -m --raw 686d534ac562aceeab1cfe7159c9bb8a214a6689..fcfd4326971a75eab3908c884969db19a12cad81 # timeout=10
+Ignored commit fcfd4326971a75eab3908c884969db19a12cad81: No paths matched included region whitelist
+Ignored commit 883a7d66f00ab40f4c6b85f4a93ba6eaca85c5e9: Found excluded message: deploy: promote 686d534 to stable [skip ci]
+
+Ignored commit 544baf0a70cd00510c1ffedc2fb7a44282fe1c97: Found excluded message: deploy: canary 686d534 on 1 of 5 pods [skip ci]
+
+Done. Took 1.4 sec
+No changes
