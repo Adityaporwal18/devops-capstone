@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: eventhub-db-restore
+  namespace: eventhub
+spec:
+  restartPolicy: Never
+  containers:
+    - name: restore
+      image: postgres:17-alpine
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          file="$(ls -t /backups/eventhub-*.sql.gz | head -n 1)"
+          echo "restoring from ${file}"
+          gunzip -c "$file" | psql -q -v ON_ERROR_STOP=1 "$DATABASE_URL" > /dev/null
+          echo "restore finished"
+      env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: eventhub-db
+              key: DATABASE_URL
+      volumeMounts:
+        - name: backups
+          mountPath: /backups
+          readOnly: true
+  volumes:
+    - name: backups
+      persistentVolumeClaim:
+        claimName: eventhub-backups

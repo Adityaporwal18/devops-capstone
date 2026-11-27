@@ -22,6 +22,20 @@
         <hudson.plugins.git.extensions.impl.MessageExclusion>
           <excludedMessage>(?s).*\[skip ci\].*</excludedMessage>
         </hudson.plugins.git.extensions.impl.MessageExclusion>
+        <hudson.plugins.git.extensions.impl.PathRestriction>
+          <includedRegions>app/.*
+tests/.*
+Dockerfile
+requirements.*\.txt
+release\.env
+Jenkinsfile
+compose\.test\.yml
+pytest\.ini
+wsgi\.py
+gunicorn\.conf\.py
+scripts/(gitops|wait-rollout|canary-check)\.sh</includedRegions>
+          <excludedRegions></excludedRegions>
+        </hudson.plugins.git.extensions.impl.PathRestriction>
       </extensions>
     </scm>
     <scriptPath>Jenkinsfile</scriptPath>
