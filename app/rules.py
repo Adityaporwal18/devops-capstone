@@ -50,7 +50,7 @@ def clean_registration(data):
 
 
 def seats_left(capacity, registered):
-    return max(capacity - registered, 0)
+    return capacity - registered
 
 
 def is_full(capacity, registered):
