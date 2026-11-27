@@ -1,0 +1,26 @@
+name: eventhub-test
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: eventhub
+      POSTGRES_DB: eventhub_test
+      POSTGRES_PASSWORD: throwaway-test-database
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventhub -d eventhub_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  tests:
+    build:
+      context: .
+      target: test
+    environment:
+      DATABASE_URL: postgresql://eventhub:throwaway-test-database@db:5432/eventhub_test
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["pytest", "-v", "tests/test_api.py"]
