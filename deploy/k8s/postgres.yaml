@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eventhub-db
+  labels:
+    app: eventhub-db
+spec:
+  selector:
+    app: eventhub-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eventhub-db
+spec:
+  serviceName: eventhub-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eventhub-db
+  template:
+    metadata:
+      labels:
+        app: eventhub-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: eventhub
+            - name: POSTGRES_DB
+              value: eventhub
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: eventhub-db
+                  key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "eventhub", "-d", "eventhub"]
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 384Mi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

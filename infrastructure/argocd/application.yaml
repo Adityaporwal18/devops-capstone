@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: eventhub
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Adityaporwal18/devops-capstone.git
+    targetRevision: main
+    path: deploy/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: eventhub
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,68 @@
+---
+- name: Bring up the EventHub platform cluster
+  hosts: platform
+  gather_facts: false
+  vars:
+    profile: capstone
+    argocd_version: v3.6.3
+    kubectl: "kubectl --context {{ profile }}"
+
+  tasks:
+    - name: Check that the required tools are installed
+      ansible.builtin.command: "which {{ item }}"
+      loop: [docker, kubectl, minikube, terraform]
+      changed_when: false
+
+    - name: Read the state of the Minikube profile
+      ansible.builtin.command: "minikube status -p {{ profile }} --format={% raw %}'{{.Host}}'{% endraw %}"
+      register: cluster
+      changed_when: false
+      failed_when: false
+
+    - name: Start the Minikube cluster
+      ansible.builtin.command: "minikube start -p {{ profile }} --driver=docker --cpus=3 --memory=3072"
+      when: "'Running' not in cluster.stdout"
+
+    - name: Wait for the node to be Ready
+      ansible.builtin.command: "{{ kubectl }} wait --for=condition=Ready node --all --timeout=180s"
+      changed_when: false
+
+    - name: Check whether Argo CD is installed
+      ansible.builtin.command: "{{ kubectl }} get deployment argocd-server -n argocd"
+      register: argocd
+      changed_when: false
+      failed_when: false
+
+    - name: Create the argocd namespace
+      ansible.builtin.command: "{{ kubectl }} create namespace argocd"
+      when: argocd.rc != 0
+
+    - name: Install Argo CD
+      ansible.builtin.command: >-
+        {{ kubectl }} apply -n argocd --server-side
+        -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ argocd_version }}/manifests/install.yaml
+      when: argocd.rc != 0
+
+    - name: Read replica counts of the Argo CD components that this platform does not use
+      ansible.builtin.command: >-
+        {{ kubectl }} get deployment {{ item }} -n argocd -o jsonpath={.spec.replicas}
+      loop: [argocd-dex-server, argocd-notifications-controller, argocd-applicationset-controller]
+      register: unused
+      changed_when: false
+
+    - name: Scale the unused Argo CD components to zero
+      ansible.builtin.command: "{{ kubectl }} scale deployment {{ item.item }} -n argocd --replicas=0"
+      loop: "{{ unused.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+      when: item.stdout != '0'
+
+    - name: Wait for the Argo CD server and repository server
+      ansible.builtin.command: >-
+        {{ kubectl }} rollout status deployment/{{ item }} -n argocd --timeout=600s
+      loop: [argocd-server, argocd-repo-server, argocd-redis]
+      changed_when: false
+
+    - name: Wait for the Argo CD application controller
+      ansible.builtin.command: "{{ kubectl }} rollout status statefulset/argocd-application-controller -n argocd --timeout=600s"
+      changed_when: false

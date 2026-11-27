@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: eventhub-backups
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: eventhub-db-backup
+spec:
+  schedule: "*/30 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: backup
+              image: postgres:17-alpine
+              command:
+                - sh
+                - -c
+                - |
+                  set -eu
+                  file="/backups/eventhub-$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
+                  pg_dump --clean --if-exists "$DATABASE_URL" | gzip > "$file"
+                  ls -t /backups/eventhub-*.sql.gz | tail -n +11 | xargs -r rm --
+                  echo "backup written: $file ($(wc -c < "$file") bytes)"
+              env:
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: eventhub-db
+                      key: DATABASE_URL
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              volumeMounts:
+                - name: backups
+                  mountPath: /backups
+          volumes:
+            - name: backups
+              persistentVolumeClaim:
+                claimName: eventhub-backups
