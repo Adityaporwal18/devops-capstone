@@ -16,7 +16,8 @@ CMD ["pytest", "-v"]
 FROM base AS runtime
 ARG APP_VERSION=dev
 ARG GIT_SHA=unknown
-ENV APP_VERSION=${APP_VERSION} GIT_SHA=${GIT_SHA}
+ARG FAULT_RATE=0
+ENV APP_VERSION=${APP_VERSION} GIT_SHA=${GIT_SHA} FAULT_RATE=${FAULT_RATE}
 RUN useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin eventhub
 USER 10001
 EXPOSE 8000
